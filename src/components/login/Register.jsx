@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, registerWithEmailAndPassword,signInWithGoogle,} from "../config/Firebase";
-import "./Register.css";
+import { auth, registerWithEmailAndPassword } from "../config/Firebase";
+import "./_register.scss";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Button, TextField } from "@mui/material";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -11,52 +14,97 @@ function Register() {
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
-  const register = () => {
-    if (!name) alert("Please enter name");
-    registerWithEmailAndPassword(name, email, password);
-  };
-
   useEffect(() => {
     if (loading) return;
     if (user) navigate("/dashboard");
   }, [user, loading, navigate]);
 
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      name: "",
+    },
+
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("Không để trống"),
+      email: Yup.string()
+        .required("Không để trống")
+        .email("Email không hợp lệ"),
+      password: Yup.string().required("Không để trống"),
+    }),
+  });
   return (
     <div className="register">
       <div className="register__container">
-        <input
-          type="text"
-          className="register__textBox"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Full Name"
-        />
-        <input
-          type="text"
-          className="register__textBox"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="E-mail Address"
-        />
-        <input
-          type="password"
-          className="register__textBox"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
-        <button className="register__btn" onClick={register}>
-          Register
-        </button>
-        <button
-          className="register__btn register__google"
-          onClick={signInWithGoogle}
-        >
-          Register with Google
-        </button>
-        <div>
-          Already have an account? <Link to="/">Login</Link> now.
-        </div>
+        <h2>Register</h2>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="mb-3">
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Username"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+          </div>
+          <div className="mb-3">
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Email"
+              name="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
+            />
+          </div>
+          <div className="mb-3">
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Password"
+              name="password"
+              type="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              background: "linear-gradient(45deg, #aaa 30%, #434343 90%)",
+              border: 0,
+              borderRadius: 15,
+              boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .3)",
+              color: "white",
+              height: 48,
+              padding: "0 30px",
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              textTransform: "none",
+              "&:hover": {
+                background: "linear-gradient(45deg, #434343  30%, #aaa  90%)",
+              },
+            }}
+            onClick={() => registerWithEmailAndPassword(name, email, password)}
+          >
+            Register
+          </Button>
+          <div>
+            Already have an account? <Link to="/">Login</Link> now.
+          </div>
+        </form>
       </div>
     </div>
   );
