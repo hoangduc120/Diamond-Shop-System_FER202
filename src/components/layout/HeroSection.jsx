@@ -48,7 +48,7 @@ const HeroSection = () => {
       </Box>
 
       <HandcraftedSection /> {/* Thêm phần HandcraftedSection vào đây */}
-      <Footer /> {/* Thêm phần Footer vào đây */}
+      
     </Box>
   );
 };
