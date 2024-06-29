@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -8,7 +8,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Button, TextField } from "@mui/material";
 function Reset() {
-  const [email, setEmail] = useState("");
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
   useEffect(() => {
@@ -19,6 +18,9 @@ function Reset() {
   const formik = useFormik({
     initialValues: {
       email: "",
+    },
+    onSubmit: async (values) => {
+      await sendPasswordReset(values.email);
     },
 
     validationSchema: Yup.object().shape({
@@ -63,7 +65,6 @@ function Reset() {
                 background: "linear-gradient(45deg, #434343  30%, #aaa  90%)",
               },
             }}
-            onClick={() => sendPasswordReset(email)}
           >
             Send password reset email
           </Button>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, registerWithEmailAndPassword } from "../config/Firebase";
@@ -8,9 +8,6 @@ import * as Yup from "yup";
 import { Button, TextField } from "@mui/material";
 
 function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
@@ -25,7 +22,10 @@ function Register() {
       password: "",
       name: "",
     },
-
+    onSubmit: async (values) => {
+      const { name, email, password } = values;
+      await registerWithEmailAndPassword(name, email, password);
+    },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Không để trống"),
       email: Yup.string()
@@ -44,12 +44,12 @@ function Register() {
               fullWidth
               variant="outlined"
               label="Username"
-              name="email"
-              value={formik.values.email}
+              name="name"
+              value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
             />
           </div>
           <div className="mb-3">
@@ -57,12 +57,12 @@ function Register() {
               fullWidth
               variant="outlined"
               label="Email"
-              name="name"
-              value={formik.values.name}
+              name="email"
+              value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
             />
           </div>
           <div className="mb-3">
@@ -97,7 +97,6 @@ function Register() {
                 background: "linear-gradient(45deg, #434343  30%, #aaa  90%)",
               },
             }}
-            onClick={() => registerWithEmailAndPassword(name, email, password)}
           >
             Register
           </Button>

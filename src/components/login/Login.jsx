@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   auth,
@@ -13,8 +13,6 @@ import GoogleButton from "react-google-button";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
@@ -28,7 +26,10 @@ function Login() {
       email: "",
       password: "",
     },
-
+    onSubmit: async (values) => {
+      const { email, password } = values;
+      await logInWithEmailAndPassword(email, password);
+    },
     validationSchema: Yup.object().shape({
       email: Yup.string()
         .required("Không để trống")
@@ -87,7 +88,6 @@ function Login() {
                 background: "linear-gradient(45deg, #434343  30%, #aaa  90%)",
               },
             }}
-            onClick={() => logInWithEmailAndPassword(email, password)}
           >
             Login
           </Button>
