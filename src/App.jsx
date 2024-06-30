@@ -4,12 +4,16 @@ import Login from "./components/login/Login";
 import Register from "./components/login/Register";
 import Reset from "./components/login/Reset";
 import Dashboard from "./components/login/Dashboard";
+import Profile from "./pages/users/Profile";
+import MyAccount from "./pages/users/MyAccount";
 function App() {
   return (
     <div className="app">
       <Router>
         <Routes>
           <Route exact path="/" element={<Login />} />
+          <Route exact path="/profile" element={<Profile />} />
+          <Route exact path="/account" element={<MyAccount />} />
           <Route exact path="/register" element={<Register />} />
           <Route exact path="/reset" element={<Reset />} />
           <Route exact path="/dashboard" element={<Dashboard />} />
