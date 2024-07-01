@@ -77,7 +77,7 @@ const registerWithEmailAndPassword = async (name, email, password) => {
       authProvider: "local",
       phone: "",
       address_shipping: "",
-      role: "", 
+      role: "",
     });
 
     await updateDoc(doc(db, "users", docRef.id), {
@@ -101,6 +101,6 @@ const sendPasswordReset = async (email) => {
 const logout = () => {
   signOut(auth);
 };
-export {auth, db, signInWithGoogle, logInWithEmailAndPassword, registerWithEmailAndPassword, sendPasswordReset, logout};
+export { auth, db, signInWithGoogle, logInWithEmailAndPassword, registerWithEmailAndPassword, sendPasswordReset, logout };
 
 //TODO: "account_status", "role" is bool

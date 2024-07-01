@@ -6,12 +6,14 @@ import Reset from "./components/login/Reset";
 import Dashboard from "./components/login/Dashboard";
 import Profile from "./pages/users/Profile";
 import MyAccount from "./pages/users/MyAccount";
+import UsersManagement from "./pages/admin/UserManagement";
 function App() {
   return (
     <div className="app">
       <Router>
         <Routes>
           <Route exact path="/" element={<Login />} />
+          <Route exact path="/usermanagement" element={<UsersManagement />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route exact path="/account" element={<MyAccount />} />
           <Route exact path="/register" element={<Register />} />
