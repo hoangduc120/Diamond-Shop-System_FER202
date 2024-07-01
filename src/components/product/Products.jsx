@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
 import { Box, Typography, Card, CardMedia, CardContent, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('https://668012da56c2c76b495b1504.mockapi.io/diamonds')
+    axios.get('/api/diamonds')
       .then(response => {
         setProducts(response.data);
       })
@@ -53,23 +55,23 @@ const Products = () => {
   };
 
   const handleProductClick = (productId) => {
-    console.log('Product ID:', productId);
+    navigate(`/product/${productId}`);
   };
 
   return (
     <Container maxWidth="lg" style={{ padding: '40px 0' }}>
       <Typography variant="h4" gutterBottom style={{ textAlign: 'center', marginBottom: '40px' }}>
-        Sản phẩm bán chạy
+      Best Selling Products.
       </Typography>
       <Slider {...settings}>
         {products.length > 0 ? (
           products.map((product) => (
-            <Box key={product.id} padding={2}>
-              <Card onClick={() => handleProductClick(product.id)} style={{ cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)' }}>
+            <Box key={product.diamond_id} padding={2}>
+              <Card onClick={() => handleProductClick(product.diamond_id)} style={{ cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)' }}>
                 <CardMedia
                   component="img"
                   height="200"
-                  image={product.img} // Sử dụng URL hình ảnh từ API
+                  image={product.image} 
                   alt={product.name}
                   style={{ borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}
                 />

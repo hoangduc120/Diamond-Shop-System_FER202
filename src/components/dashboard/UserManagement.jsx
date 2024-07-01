@@ -1,23 +1,58 @@
-import React, { useState } from 'react';
-import { Typography, Button, IconButton, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import axios from '../../axiosConfig';
+import { Typography, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, FormControlLabel, Switch } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-
-const initialUsers = [
-  { username: 'taile03', fullname: 'Le Thanh Tai', email: 'taile03@gmail.com', phone: '0909 113 114', address: 'Thu Duc', role: 'Admin' },
-  { username: 'phamhieu', fullname: 'Pham Van Tuan Hieu', email: 'phamhieu@gmail.com', phone: '0989 889 889', address: 'Long An', role: 'Admin' },
-];
+import { v4 as uuidv4 } from 'uuid';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState({ username: '', fullname: '', email: '', phone: '', address: '', role: '' });
+  const [currentUser, setCurrentUser] = useState({
+    user_id: '',
+    fullname: '',
+    email: '',
+    phone: '',
+    address_shipping: '',
+    avatar: '',
+    gender: false,
+    role: false,
+    account_status: false,
+  });
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState('');
 
-  const handleClickOpen = () => {
-    setIsEditing(false);
-    setCurrentUser({ username: '', fullname: '', email: '', phone: '', address: '', role: '' });
-    setError('');
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = () => {
+    axios.get('/users')
+      .then(response => {
+        console.log('Fetched users:', response.data);
+        setUsers(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  };
+
+  const handleClickOpen = (user) => {
+    if (user) {
+      setIsEditing(true);
+      setCurrentUser(user);
+    } else {
+      setIsEditing(false);
+      setCurrentUser({
+        user_id: uuidv4(),
+        fullname: '',
+        email: '',
+        phone: '',
+        address_shipping: '',
+        avatar: '',
+        gender: false,
+        role: false,
+        account_status: false,
+      });
+    }
     setOpen(true);
   };
 
@@ -26,110 +61,112 @@ const UserManagement = () => {
   };
 
   const handleSave = () => {
-    if (users.find(user => user.username === currentUser.username && !isEditing)) {
-      setError('User name is already exist');
+    console.log('Current User:', currentUser);
+
+    if (!currentUser.fullname || !currentUser.email || !currentUser.phone || !currentUser.address_shipping) {
+      alert('Please fill in all required fields.');
       return;
     }
+
     if (isEditing) {
-      setUsers(users.map(user => user.username === currentUser.username ? currentUser : user));
+      axios.put(`/users/${currentUser.user_id}`, currentUser)
+        .then(response => {
+          console.log('User updated:', response.data);
+          fetchUsers();
+          handleClose();
+        })
+        .catch(error => {
+          console.error('Error updating user:', error.response ? error.response.data : error.message);
+        });
     } else {
-      setUsers([...users, currentUser]);
+      axios.post('/users', currentUser)
+        .then(response => {
+          console.log('User added:', response.data);
+          fetchUsers();
+          handleClose();
+        })
+        .catch(error => {
+          console.error('Error adding user:', error.response ? error.response.data : error.message);
+        });
     }
-    setOpen(false);
   };
 
-  const handleEdit = (user) => {
-    setIsEditing(true);
-    setCurrentUser(user);
-    setError('');
-    setOpen(true);
-  };
-
-  const handleDelete = (username) => {
-    setUsers(users.filter(user => user.username !== username));
+  const handleDelete = (user_id) => {
+    axios.delete(`/users/${user_id}`)
+      .then(response => {
+        console.log('User deleted:', response.data);
+        fetchUsers();
+      })
+      .catch(error => {
+        console.error('Error deleting user:', error.response ? error.response.data : error.message);
+      });
   };
 
   return (
     <Container maxWidth="lg" style={{ marginTop: '20px' }}>
       <Typography variant="h5" gutterBottom>
-        Users
+        User Management
       </Typography>
-      <Button variant="contained" color="primary" style={{ marginBottom: '10px' }} onClick={handleClickOpen}>+ Add User</Button>
-      <TableContainer component={Paper}>
+      <Button variant="contained" color="primary" style={{ marginBottom: '10px' }} onClick={() => handleClickOpen(null)}>+ Add User</Button>
+      <TableContainer component={Paper} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>User name</TableCell>
-              <TableCell>Full name</TableCell>
+              <TableCell>UserID</TableCell>
+              <TableCell>Full Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Phone number</TableCell>
+              <TableCell>Phone</TableCell>
               <TableCell>Address</TableCell>
+              <TableCell>Avatar</TableCell>
+              <TableCell>Gender</TableCell>
               <TableCell>Role</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.username}>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.fullname}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.phone}</TableCell>
-                <TableCell>{user.address}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>
-                  <IconButton aria-label="edit" color="primary" onClick={() => handleEdit(user)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton aria-label="delete" color="secondary" onClick={() => handleDelete(user.username)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
+            {users.length > 0 ? (
+              users.map((user) => (
+                <TableRow key={user.user_id}>
+                  <TableCell>{user.user_id}</TableCell>
+                  <TableCell>{user.fullname}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>{user.address_shipping}</TableCell>
+                  <TableCell>
+                    <img src={user.avatar} alt={user.fullname} style={{ width: '50px', height: '50px' }} />
+                  </TableCell>
+                  <TableCell>{user.gender ? 'Male' : 'Female'}</TableCell>
+                  <TableCell>{user.role ? 'Admin' : 'User'}</TableCell>
+                  <TableCell>{user.account_status ? 'Active' : 'Inactive'}</TableCell>
+                  <TableCell>
+                    <IconButton aria-label="edit" color="primary" onClick={() => handleClickOpen(user)}>
+                      <Edit />
+                    </IconButton>
+                    <IconButton aria-label="delete" color="secondary" onClick={() => handleDelete(user.user_id)}>
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={10} align="center">No users found</TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{isEditing ? 'Edit User' : 'Add New User'}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {isEditing ? 'Update the information for this user.' : 'Fill in the information for the new user.'}
-          </DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
-            label="User name"
+            label="Full Name"
             type="text"
             fullWidth
-            value={currentUser.username}
-            onChange={(e) => setCurrentUser({ ...currentUser, username: e.target.value })}
-            error={!!error}
-            helperText={error}
-          />
-          <TextField
-            margin="dense"
-            label="Password"
-            type="password"
-            fullWidth
-            value={currentUser.password}
-            onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}
-          />
-          <TextField
-            margin="dense"
-            label="Role"
-            type="text"
-            fullWidth
-            value={currentUser.role}
-            onChange={(e) => setCurrentUser({ ...currentUser, role: e.target.value })}
-          />
-          <TextField
-            margin="dense"
-            label="Phone number"
-            type="text"
-            fullWidth
-            value={currentUser.phone}
-            onChange={(e) => setCurrentUser({ ...currentUser, phone: e.target.value })}
+            value={currentUser.fullname}
+            onChange={(e) => setCurrentUser({ ...currentUser, fullname: e.target.value })}
           />
           <TextField
             margin="dense"
@@ -141,11 +178,39 @@ const UserManagement = () => {
           />
           <TextField
             margin="dense"
+            label="Phone"
+            type="text"
+            fullWidth
+            value={currentUser.phone}
+            onChange={(e) => setCurrentUser({ ...currentUser, phone: e.target.value })}
+          />
+          <TextField
+            margin="dense"
             label="Address"
             type="text"
             fullWidth
-            value={currentUser.address}
-            onChange={(e) => setCurrentUser({ ...currentUser, address: e.target.value })}
+            value={currentUser.address_shipping}
+            onChange={(e) => setCurrentUser({ ...currentUser, address_shipping: e.target.value })}
+          />
+          <TextField
+            margin="dense"
+            label="Avatar"
+            type="text"
+            fullWidth
+            value={currentUser.avatar}
+            onChange={(e) => setCurrentUser({ ...currentUser, avatar: e.target.value })}
+          />
+          <FormControlLabel
+            control={<Switch checked={currentUser.gender} onChange={(e) => setCurrentUser({ ...currentUser, gender: e.target.checked })} />}
+            label={currentUser.gender ? 'Male' : 'Female'}
+          />
+          <FormControlLabel
+            control={<Switch checked={currentUser.role} onChange={(e) => setCurrentUser({ ...currentUser, role: e.target.checked })} />}
+            label={currentUser.role ? 'Admin' : 'User'}
+          />
+          <FormControlLabel
+            control={<Switch checked={currentUser.account_status} onChange={(e) => setCurrentUser({ ...currentUser, account_status: e.target.checked })} />}
+            label={currentUser.account_status ? 'Active' : 'Inactive'}
           />
         </DialogContent>
         <DialogActions>
@@ -153,7 +218,7 @@ const UserManagement = () => {
             Close
           </Button>
           <Button onClick={handleSave} color="primary">
-            {isEditing ? 'Update User' : 'Add User'}
+            Save
           </Button>
         </DialogActions>
       </Dialog>

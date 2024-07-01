@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
 import img1 from '../../assets/images/img1.jpg';
-import img2 from '../../assets/images/img2.jpg'; // Hình ảnh cho phần "Design Your Own Engagement Ring"
+import img2 from '../../assets/images/img2.jpg'; 
 import Products from '../product/Products';
-import HandcraftedSection from './HandcraftedSection'; // Import HandcraftedSection
-import Footer from './Footer'; // Import Footer
+import HandcraftedSection from './HandcraftedSection'; 
+
 
 const HeroSection = () => {
   return (
@@ -47,7 +47,7 @@ const HeroSection = () => {
         </Container>
       </Box>
 
-      <HandcraftedSection /> {/* Thêm phần HandcraftedSection vào đây */}
+      <HandcraftedSection /> 
       
     </Box>
   );

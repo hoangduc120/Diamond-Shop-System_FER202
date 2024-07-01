@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
-import img3 from '../../assets/images/img3.jpg'; // Đảm bảo rằng bạn đã lưu hình ảnh này vào thư mục này
+import img3 from '../../assets/images/img3.jpg'; 
 
 const HandcraftedSection = () => {
   return (
@@ -15,7 +15,7 @@ const HandcraftedSection = () => {
             the finest-quality materials and outstanding engagement ring design at an amazing value.
           </Typography>
           <Button variant="contained" style={{ backgroundColor: '#2c3e50', color: 'white', fontFamily: 'serif' }}>
-            ABOUT BLUE NILE
+            ABOUT Diamond Jewelry
           </Button>
         </Box>
         <Box style={{ flex: 1 }}>

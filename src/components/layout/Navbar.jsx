@@ -25,7 +25,7 @@ const Navbar = () => {
           <IconButton color="inherit">
             <Search />
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton color="inherit" component={Link} to="/cart">
             <ShoppingCart />
           </IconButton>
         </Toolbar>

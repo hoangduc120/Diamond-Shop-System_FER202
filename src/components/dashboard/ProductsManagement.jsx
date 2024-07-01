@@ -1,6 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../../axiosConfig'; // Đường dẫn tới axiosConfig
-import { Typography, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, FormControlLabel, Switch } from '@mui/material';
+import axios from '../../axiosConfig';
+import {
+  Typography,
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  IconButton,
+  FormControlLabel,
+  Switch,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,20 +31,20 @@ const ProductsManagement = () => {
   const [products, setProducts] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({
-    image: '',
-    color: '',
-    total_price: 0,
-    price: 0,
-    diamond_id: '',
+    name: '',
+    shape: '',
     carat: 0,
+    color: [],
+    price: 0,
+    lab: '',
     origin: '',
-    id: '',
-    input_date: '',
-    diamond_name: '',
+    quantity: 0,
     diamond_status: false,
-    dimensions: '',
+    image: '',
+    diamond_id: '', // Thêm diamond_id vào state
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -45,18 +68,17 @@ const ProductsManagement = () => {
     } else {
       setIsEditing(false);
       setCurrentProduct({
-        image: '',
-        color: '',
-        total_price: 0,
-        price: 0,
-        diamond_id: uuidv4(), // Sử dụng uuid để tạo id
+        name: '',
+        shape: '',
         carat: 0,
+        color: [],
+        price: 0,
+        lab: '',
         origin: '',
-        id: '',
-        input_date: new Date().toISOString(),
-        diamond_name: '',
-        diamond_status: false, // Đây là giá trị mặc định khi thêm mới
-        dimensions: '',
+        quantity: 0,
+        diamond_status: false,
+        image: '',
+        diamond_id: '', // Đặt lại diamond_id khi thêm mới
       });
     }
     setOpen(true);
@@ -69,7 +91,7 @@ const ProductsManagement = () => {
   const handleSave = () => {
     console.log('Current Product:', currentProduct);
 
-    if (!currentProduct.image || !currentProduct.diamond_name || !currentProduct.color || !currentProduct.carat || !currentProduct.price || !currentProduct.total_price || !currentProduct.origin || !currentProduct.dimensions) {
+    if (!currentProduct.name || !currentProduct.carat || !currentProduct.price || !currentProduct.origin || !currentProduct.quantity || !currentProduct.image) {
       alert('Please fill in all required fields.');
       return;
     }
@@ -85,6 +107,7 @@ const ProductsManagement = () => {
           console.error('Error updating product:', error.response ? error.response.data : error.message);
         });
     } else {
+      currentProduct.diamond_id = uuidv4(); // Sử dụng uuid để tạo diamond_id mới
       axios.post('/diamonds', currentProduct)
         .then(response => {
           console.log('Product added:', response.data);
@@ -108,47 +131,59 @@ const ProductsManagement = () => {
       });
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <Container maxWidth="lg" style={{ marginTop: '20px' }}>
       <Typography variant="h5" gutterBottom>
         Products Management
       </Typography>
+      <TextField
+        label="Search"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
       <Button variant="contained" color="primary" style={{ marginBottom: '10px' }} onClick={() => handleClickOpen(null)}>+ Add Product</Button>
       <TableContainer component={Paper} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ProductID</TableCell>
               <TableCell>Name</TableCell>
-              <TableCell>Color</TableCell>
+              <TableCell>Shape</TableCell>
               <TableCell>Carat</TableCell>
+              <TableCell>Color</TableCell>
               <TableCell>Price</TableCell>
-              <TableCell>Total Price</TableCell>
+              <TableCell>Lab</TableCell>
               <TableCell>Origin</TableCell>
-              <TableCell>Dimensions</TableCell>
+              <TableCell>Quantity</TableCell>
               <TableCell>Image</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Input Date</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.length > 0 ? (
-              products.map((product) => (
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
                 <TableRow key={product.diamond_id}>
-                  <TableCell>{product.diamond_id}</TableCell>
-                  <TableCell>{product.diamond_name}</TableCell>
-                  <TableCell>{product.color}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.shape}</TableCell>
                   <TableCell>{product.carat}</TableCell>
+                  <TableCell>{product.color.join(', ')}</TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.total_price}</TableCell>
+                  <TableCell>{product.lab}</TableCell>
                   <TableCell>{product.origin}</TableCell>
-                  <TableCell>{product.dimensions}</TableCell>
+                  <TableCell>{product.quantity}</TableCell>
                   <TableCell>
-                    <img src={product.image} alt={product.diamond_name} style={{ width: '50px', height: '50px' }} />
+                    <img src={product.image} alt={product.name} style={{ width: '50px', height: '50px' }} />
                   </TableCell>
                   <TableCell>{product.diamond_status ? 'Active' : 'Inactive'}</TableCell>
-                  <TableCell>{product.input_date}</TableCell>
                   <TableCell>
                     <IconButton aria-label="edit" color="primary" onClick={() => handleClickOpen(product)}>
                       <Edit />
@@ -161,7 +196,7 @@ const ProductsManagement = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={12} align="center">No products found</TableCell>
+                <TableCell colSpan={11} align="center">No products found</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -175,17 +210,23 @@ const ProductsManagement = () => {
             label="Name"
             type="text"
             fullWidth
-            value={currentProduct.diamond_name}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, diamond_name: e.target.value })}
+            value={currentProduct.name}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, name: e.target.value })}
           />
-          <TextField
-            margin="dense"
-            label="Color"
-            type="text"
-            fullWidth
-            value={currentProduct.color}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, color: e.target.value })}
-          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Shape</InputLabel>
+            <Select
+              value={currentProduct.shape}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, shape: e.target.value })}
+            >
+              <MenuItem value="Round">Round</MenuItem>
+              <MenuItem value="Pear">Pear</MenuItem>
+              <MenuItem value="Heart">Heart</MenuItem>
+              <MenuItem value="Princess">Princess</MenuItem>
+              <MenuItem value="Oval">Oval</MenuItem>
+              <MenuItem value="Emerald">Emerald</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             margin="dense"
             label="Carat"
@@ -194,6 +235,23 @@ const ProductsManagement = () => {
             value={currentProduct.carat}
             onChange={(e) => setCurrentProduct({ ...currentProduct, carat: e.target.value })}
           />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Color</InputLabel>
+            <Select
+              multiple
+              value={currentProduct.color}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, color: e.target.value })}
+              renderValue={(selected) => selected.join(', ')}
+            >
+              <MenuItem value="E">E</MenuItem>
+              <MenuItem value="F">F</MenuItem>
+              <MenuItem value="G">G</MenuItem>
+              <MenuItem value="D">D</MenuItem>
+              <MenuItem value="J">J</MenuItem>
+              <MenuItem value="I">I</MenuItem>
+              <MenuItem value="H">H</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             margin="dense"
             label="Price"
@@ -202,14 +260,17 @@ const ProductsManagement = () => {
             value={currentProduct.price}
             onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
           />
-          <TextField
-            margin="dense"
-            label="Total Price"
-            type="number"
-            fullWidth
-            value={currentProduct.total_price}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, total_price: e.target.value })}
-          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Lab</InputLabel>
+            <Select
+              value={currentProduct.lab}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, lab: e.target.value })}
+            >
+              <MenuItem value="GIA">GIA</MenuItem>
+              <MenuItem value="SJC">SJC</MenuItem>
+              
+            </Select>
+          </FormControl>
           <TextField
             margin="dense"
             label="Origin"
@@ -220,11 +281,11 @@ const ProductsManagement = () => {
           />
           <TextField
             margin="dense"
-            label="Dimensions"
-            type="text"
+            label="Quantity"
+            type="number"
             fullWidth
-            value={currentProduct.dimensions}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, dimensions: e.target.value })}
+            value={currentProduct.quantity}
+            onChange={(e) => setCurrentProduct({ ...currentProduct, quantity: e.target.value })}
           />
           <TextField
             margin="dense"
@@ -237,14 +298,6 @@ const ProductsManagement = () => {
           <FormControlLabel
             control={<Switch checked={currentProduct.diamond_status} onChange={(e) => setCurrentProduct({ ...currentProduct, diamond_status: e.target.checked })} />}
             label={currentProduct.diamond_status ? 'Active' : 'Inactive'}
-          />
-          <TextField
-            margin="dense"
-            label="Input Date"
-            type="text"
-            fullWidth
-            value={currentProduct.input_date}
-            onChange={(e) => setCurrentProduct({ ...currentProduct, input_date: e.target.value })}
           />
         </DialogContent>
         <DialogActions>
