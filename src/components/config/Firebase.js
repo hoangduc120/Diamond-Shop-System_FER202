@@ -44,6 +44,7 @@ const signInWithGoogle = async () => {
         address_shipping: "",
         role: "",
       });
+      console.log(user.getIdToken)
       console.log("Document written with ID: ", docRef.id);
       await updateDoc(doc(db, "users", docRef.id), {
         user_id: docRef.id,
