@@ -1,11 +1,5 @@
-import React from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import {
-  CssBaseline,
-  Box,
-  Typography,
-  Container,
-} from "@mui/material";
+import { CssBaseline, Box, Typography, Container } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -66,8 +60,7 @@ export default function AboutUs() {
           justifyContent: "center",
           textAlign: "center",
         }}
-      >
-      </Box>
+      ></Box>
 
       <Box display="flex" alignItems="center" justifyContent="center">
         <Container maxWidth="md" sx={{ mt: 4 }}>
