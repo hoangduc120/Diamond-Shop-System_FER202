@@ -90,4 +90,4 @@ function getMessages(roomId, callback) {
   );
 }
 
-export { sendMessage, getMessages };
+export { signInWithGoogle, sendMessage, getMessages };
