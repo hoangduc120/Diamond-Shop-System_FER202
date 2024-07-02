@@ -1,4 +1,3 @@
-import React from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Container, Box } from '@mui/material';
 import { ShoppingCart, Person, Search } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -13,11 +12,11 @@ const Navbar = () => {
           </Typography>
           <Box style={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'space-around' }}>
             <Button component={Link} to="/diamonds" color="inherit">Diamonds</Button>
-            <Button component={Link} to="/engagementRings" color="inherit">Engagement Rings</Button>
-            <Button component={Link} to="/weddingRings" color="inherit">Wedding Rings</Button>
-            <Button component={Link} to="/jewelry" color="inherit">Jewelry</Button>
-            <Button component={Link} to="/gemstones" color="inherit">Gemstones</Button>
-            <Button component={Link} to="/education" color="inherit">Education</Button>
+            <Button component={Link} to="/jewelrymeasurementguide" color="inherit">Jewelry measurement guide</Button>
+            <Button component={Link} to="/saleoff" color="inherit">Sale Off</Button>
+            <Button component={Link} to="/faqs" color="inherit">FAQs</Button>
+            <Button component={Link} to="/aboutus" color="inherit">About Us</Button>
+            <Button component={Link} to="/contact" color="inherit">Contact</Button>
           </Box>
           <IconButton color="inherit" component={Link} to="/dashboard">
             <Person />

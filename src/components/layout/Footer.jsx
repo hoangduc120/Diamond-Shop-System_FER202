@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Typography, Container, Grid, IconButton } from '@mui/material';
 import { FaFacebook, FaInstagram, FaLinkedin, FaLocationArrow, FaMobileAlt } from "react-icons/fa";
 import Banner from "../../assets/images/img4.jpg";
