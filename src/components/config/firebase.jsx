@@ -29,26 +29,36 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 
-const loginWithGoogle = async () => {
-    try {
-      const res = await signInWithPopup(auth, googleProvider);
-      const user = res.user;
-      const q = query(collection(db, "users"), where("uid", "==", user.uid));
-      const docs = await getDocs(q);
-      if (docs.docs.length === 0) {
-        await addDoc(collection(db, "users"), {
-          uid: user.uid,
-          name: user.displayName,
-          authProvider: "google",
-          email: user.email,
-        });
-      }
-      return { uid: user.uid, displayName: user.displayName };
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
+const signInWithGoogle = async () => {
+  try {
+    const res = await signInWithPopup(auth, googleProvider);
+    const user = res.user;
+    const q = query(collection(db, "users"), where("uid", "==", user.uid));
+    const docs = await getDocs(q);
+    if (docs.docs.length === 0) {
+      const docRef = await addDoc(collection(db, "users"), {
+        user_id: user.uid,
+        fullname: user.displayName,
+        gender: "",
+        avatar: user.photoURL,
+        email: user.email,
+        account_status: "",
+        auth: "",
+        authProvider: "google",
+        phone: "",
+        address_shipping: "",
+        role: "",
+      });
+      console.log("Document written with ID: ", docRef.id);
+      await updateDoc(doc(db, "users", docRef.id), {
+        user_id: docRef.id,
+      });
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
 
 async function sendMessage(roomId, user, text) {
     try {
