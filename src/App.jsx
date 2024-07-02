@@ -7,13 +7,14 @@ import Footer from "./components/layout/Footer";
 import ProductDetail from "./pages/users/product/ProductDetail.jsx";
 import Cart from "./pages/users/store/Cart";
 import ProductList from "./pages/users/product/ProductList";
-import HomePage from "./components/layout/Hero.jsx";
 import Measure from "./pages/users/homepage/Measure.jsx";
 import Promotion from "./pages/users/homepage/Promotion.jsx";
 import FAQ from "./pages/users/homepage/FAQ.jsx";
 import AboutUs from "./pages/users/aboutUs/AboutUs.jsx";
 import Contact from "./pages/users/Contact/Contact.jsx";
 import Checkout from "./components/Payment/checkout/Checkout.jsx";
+import HomePage from "./pages/users/homepage/HomePage.jsx";
+
 
 function App() {
   return (

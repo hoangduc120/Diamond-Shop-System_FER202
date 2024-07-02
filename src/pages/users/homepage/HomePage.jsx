@@ -1,8 +1,8 @@
 import { Box, Typography, Button, Container } from "@mui/material";
-import img1 from "../../assets/images/img1.jpg";
-import img2 from "../../assets/images/img2.jpg";
-import Products from "../../pages/users/product/Products";
-import HandcraftedSection from "./HandcraftedSection";
+import img1 from "../../../assets/images/img1.jpg";
+import img2 from "../../../assets/images/img2.jpg";
+import Products from "../product/Products";
+import HandcraftedSection from "../../../components/layout/HandcraftedSection";
 
 const HomePage = () => {
   return (
