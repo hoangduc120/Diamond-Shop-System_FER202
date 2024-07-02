@@ -1,3 +1,6 @@
+import React from "react";
+import { Container, Typography } from "@mui/material";
+import FAQ from "./components/FAQ";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/login/Login";
@@ -27,6 +30,7 @@ function App() {
       <Router>
         <Routes>
           <Route exact path="/login" element={<Login />} />
+          <Route exact path="/FAQ" element={<Login />} />
           <Route exact path="/usermanagement" element={<UsersManagement />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route exact path="/account" element={<MyAccount />} />
