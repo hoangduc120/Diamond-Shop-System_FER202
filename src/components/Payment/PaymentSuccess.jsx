@@ -11,6 +11,12 @@ import {
 
 const theme = createTheme({
   palette: {
+    primary: {
+      main: "#008000", // màu chính (màu xanh)
+    },
+    secondary: {
+      main: "#888888", // màu phụ (màu xám)
+    },
     text: {
       primary: "black", // Đổi màu mặc định cho Typography
       secondary: "grey",
@@ -20,7 +26,7 @@ const theme = createTheme({
     MuiSvgIcon: {
       styleOverrides: {
         root: {
-          fill: "green", // Màu sắc cho icon
+          fill: "#008000", // Màu sắc cho icon
         },
       },
     },
@@ -44,7 +50,7 @@ export default function PaymentSuccess() {
         }}
       >
         <CheckCircleIcon sx={{ fontSize: 50 }} />
-        <Typography variant="h5" sx={{fontWeight: "bold"}} gutterBottom>
+        <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
           Payment Success!
         </Typography>
         <Typography variant="body1" color="text.secondary" gutterBottom>
@@ -61,7 +67,7 @@ export default function PaymentSuccess() {
           <Typography variant="body1" color="text.secondary" gutterBottom>
             Total Payment
           </Typography>
-          <Typography variant="h5" sx={{fontWeight: "bold"}} gutterBottom>
+          <Typography variant="h5" sx={{ fontWeight: "bold" }} gutterBottom>
             100,000 VND
           </Typography>
         </Box>
@@ -80,7 +86,7 @@ export default function PaymentSuccess() {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Typography variant="body1" sx={{fontWeight: "bold"}}>
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                 28082004
               </Typography>
             </Grid>
@@ -90,7 +96,7 @@ export default function PaymentSuccess() {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Typography variant="body1" sx={{fontWeight: "bold"}}>
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                 28-08-2004, 3:00:00
               </Typography>
             </Grid>
@@ -100,7 +106,7 @@ export default function PaymentSuccess() {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Typography variant="body1" sx={{fontWeight: "bold"}}>
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                 Bank Transfer
               </Typography>
             </Grid>
@@ -110,7 +116,7 @@ export default function PaymentSuccess() {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Typography variant="body1" sx={{fontWeight: "bold"}}>
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                 Nguyen Thanh Mai
               </Typography>
             </Grid>
@@ -131,7 +137,7 @@ export default function PaymentSuccess() {
               </Typography>
             </Grid>
             <Grid item xs={6} sx={{ textAlign: "right" }}>
-              <Typography variant="body1" sx={{fontWeight: "bold"}}>
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                 100,000 VND
               </Typography>
             </Grid>
