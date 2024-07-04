@@ -31,7 +31,15 @@ const ProductList = () => {
   const fetchProducts = () => {
     axios.get('/api/diamonds')
       .then(response => {
-        const activeProducts = response.data.filter(product => product.diamond_status);
+        const products = response.data.map(product => {
+          if (parseInt(product.quantity) === 0) {
+            product.diamond_status = 'Inactive';
+          } else {
+            product.diamond_status = 'Active';
+          }
+          return product;
+        });
+        const activeProducts = products.filter(product => product.diamond_status === 'Active');
         setProducts(activeProducts);
         setFilteredProducts(activeProducts);
       })
