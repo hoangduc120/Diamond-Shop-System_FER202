@@ -14,7 +14,9 @@ import AboutUs from "./pages/users/aboutUs/AboutUs.jsx";
 import Contact from "./pages/users/Contact/Contact.jsx";
 import Checkout from "./components/Payment/checkout/Checkout.jsx";
 import HomePage from "./pages/users/homepage/HomePage.jsx";
-
+import Login from './pages/users/login/Login.jsx'
+import Profile from "./pages/users/profile/Profile.jsx";
+import MyAccount from "./pages/users/profile/MyAccount.jsx";
 
 function App() {
   return (
@@ -33,6 +35,9 @@ function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/account" element={<MyAccount />} />
         </Routes>
         <Footer />
       </Router>
