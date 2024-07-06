@@ -1,99 +1,285 @@
-import { Box, Typography, Container, Grid, IconButton } from '@mui/material';
-import { FaFacebook, FaInstagram, FaLinkedin, FaLocationArrow, FaMobileAlt } from "react-icons/fa";
-import Banner from "../../assets/images/img4.jpg";
+import {
+  Box,
+  Typography,
+  Container,
+  Grid,
+  IconButton,
+  Link,
+} from "@mui/material";
+import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { Link as RouterLink } from "react-router-dom";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import PhoneIphoneOutlinedIcon from "@mui/icons-material/PhoneIphoneOutlined";
+import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 
 const BannerImg = {
-  backgroundImage: `url(${Banner})`,
-  backgroundPosition: "bottom",
+  backgroundImage: `url('https://wallpaper-house.com/data/out/8/wallpaper2you_285299.jpg')`,
+  backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
   backgroundSize: "cover",
-  padding: '40px 0',
   color: "white",
 };
 
-const FooterLinks = [
+const InfoLinks = [
   {
     title: "Home",
-    link: "#",
+    link: "/",
   },
   {
-    title: "About",
-    link: "#",
+    title: "Diamonds",
+    link: "/diamonds",
+  },
+  {
+    title: "Measure Guide",
+    link: "/measureguide",
+  },
+  {
+    title: "Sale Off",
+    link: "/saleoff",
+  },
+  {
+    title: "About Us",
+    link: "/aboutus",
+  },
+];
+
+const AccountLinks = [
+  {
+    title: "My Account",
+    link: "/profile",
+  },
+  {
+    title: "Cart",
+    link: "/cart",
+  },
+  {
+    title: "FAQ",
+    link: "/faqs",
   },
   {
     title: "Contact",
-    link: "#",
-  },
-  {
-    title: "Blog",
-    link: "#",
+    link: "/contact",
   },
 ];
 
 const Footer = () => {
   return (
-    <Box style={BannerImg}>
-      <Container>
-        <Grid container spacing={5}>
+    <Box style={BannerImg} >
+      <Container sx={{ paddingTop: "2rem", paddingBottom: "0.5rem" }}>
+        <Grid container spacing={4}>
           <Grid item xs={12} md={3}>
-            <Typography variant="h4" fontWeight="bold" style={{ color: '#004080', marginBottom: '10px' }}>Diamond Jewelry</Typography>
-            <Typography variant="body2">
-              Kim cương là loại đá quý hiếm với vẻ đẹp rực rỡ và độ bền cao. Chúng thường được sử dụng trong trang sức cao cấp như nhẫn, vòng cổ, và bông tai, tượng trưng cho sự vĩnh cửu và tình yêu chân thành.
+            <IconButton
+              component={RouterLink}
+              to="/"
+              disableRipple
+              style={{ marginLeft: "3rem" }}
+            >
+              <DiamondOutlinedIcon fontSize="large" sx={{ color: "#B19567" }} />
+            </IconButton>
+            <br />
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              component={RouterLink}
+              to="/"
+              style={{
+                color: "#B19567",
+                marginBottom: "10px",
+                textDecoration: "none",
+              }}
+            >
+              Diamond Jewelry
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ marginTop: "1rem", color: "#ccc" }}
+            >
+              Sophisticated simplicity for the independent mind.
             </Typography>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Typography variant="h6" fontWeight="bold" mb={2}>Important Links</Typography>
-            <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
-              {FooterLinks.map((link) => (
-                <li key={link.title} style={{ marginBottom: '8px' }}>
-                  <a href={link.link} style={{ color: '#ccc', textDecoration: 'none' }} onMouseEnter={(e) => e.target.style.color = '#F0C14B'} onMouseLeave={(e) => e.target.style.color = '#ccc'}>
+            <Typography variant="h6" fontWeight="bold" mb={2}>
+              Information
+            </Typography>
+            <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
+              {InfoLinks.map((link) => (
+                <li key={link.title} style={{ marginBottom: "8px" }}>
+                  <Link
+                    component={RouterLink}
+                    to={link.link}
+                    style={{ color: "#ccc", textDecoration: "none" }}
+                    onMouseEnter={(e) => (e.target.style.color = "#B19567")}
+                    onMouseLeave={(e) => (e.target.style.color = "#ccc")}
+                  >
                     {link.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Typography variant="h6" fontWeight="bold" mb={2}>Links</Typography>
-            <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
-              {FooterLinks.map((link) => (
-                <li key={link.title} style={{ marginBottom: '8px' }}>
-                  <a href={link.link} style={{ color: '#ccc', textDecoration: 'none' }} onMouseEnter={(e) => e.target.style.color = '#F0C14B'} onMouseLeave={(e) => e.target.style.color = '#ccc'}>
+            <Typography variant="h6" fontWeight="bold" mb={2}>
+              Account
+            </Typography>
+            <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
+              {AccountLinks.map((link) => (
+                <li key={link.title} style={{ marginBottom: "8px" }}>
+                  <Link
+                    component={RouterLink}
+                    to={link.link}
+                    style={{ color: "#ccc", textDecoration: "none" }}
+                    onMouseEnter={(e) => (e.target.style.color = "#B19567")}
+                    onMouseLeave={(e) => (e.target.style.color = "#ccc")}
+                  >
                     {link.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </Grid>
           <Grid item xs={12} md={3}>
+            <Typography variant="h6" fontWeight="bold" mb={2}>
+              Contact Us
+            </Typography>
             <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <FaLocationArrow />
-              <Typography variant="body2">Tòa S1.01, Vinhomes</Typography>
+              <LocationOnOutlinedIcon sx={{color: "#ccc"}}/>
+              <Typography variant="body2" sx={{color: "#ccc"}}>Vinhomes Grand Park</Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <FaMobileAlt />
-              <Typography variant="body2">+84 794442282</Typography>
+              <PhoneIphoneOutlinedIcon sx={{color: "#ccc"}}/>
+              <Typography variant="body2" sx={{color: "#ccc"}}>+84 794442282</Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={1}>
-              <a href="https://www.instagram.com/dduong2306/">
-                <IconButton aria-label="instagram" style={{ color: 'white' }}>
+              <Link
+                href="https://www.instagram.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ textDecoration: "none" }}
+              >
+                <IconButton
+                  aria-label="instagram"
+                  sx={{
+                    color: "#ccc",
+                    "&:hover": {
+                      color: "#B19567",
+                    },
+                  }}
+                >
                   <FaInstagram />
                 </IconButton>
-              </a>
-              <a href="https://www.facebook.com/duong23062002/">
-                <IconButton aria-label="facebook" style={{ color: 'white' }}>
+              </Link>
+              <Link
+                href="https://www.facebook.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ textDecoration: "none" }}
+              >
+                <IconButton
+                  aria-label="facebook"
+                  sx={{
+                    color: "#ccc",
+                    "&:hover": {
+                      color: "#B19567",
+                    },
+                  }}
+                >
                   <FaFacebook />
                 </IconButton>
-              </a>
-              <a href="link-cua-linkedin">
-                <IconButton aria-label="linkedin" style={{ color: 'white' }}>
+              </Link>
+              <Link
+                href="https://www.linkedin.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ textDecoration: "none" }}
+              >
+                <IconButton
+                  aria-label="linkedin"
+                  sx={{
+                    color: "#ccc",
+                    "&:hover": {
+                      color: "#B19567",
+                    },
+                  }}
+                >
                   <FaLinkedin />
                 </IconButton>
-              </a>
+              </Link>
             </Box>
           </Grid>
         </Grid>
       </Container>
+      <Box
+        sx={{
+          color: "#fff",
+          borderTop: "1px solid #fff",
+          width: "100%",
+          mt: 2,
+          padding: "10px 0",
+        }}
+      >
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography variant="body2" color="#ccc">
+              &copy; 2024 Diamond Jewelry. All rights reserved.
+            </Typography>
+          </Grid>
+          <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
+            <Link
+              href="https://www.visa.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: "none" }}
+            >
+              <img
+                src="https://thietkelogo.com/wp-content/uploads/2017/10/visa_logo_sm.jpg"
+                alt="Visa"
+                style={{ width: "40px", height: "20px" }}
+              />
+            </Link>
+            <Link
+              href="https://www.mastercard.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: "none" }}
+            >
+              <img
+                src="https://png.pngitem.com/pimgs/s/1-17788_mastercard-logo-transparent-vector-logo-png-mastercard-png.png"
+                alt="MasterCard"
+                style={{ width: "40px", height: "20px", marginLeft: "10px" }}
+              />
+            </Link>
+            <Link
+              href="https://www.paypal.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: "none" }}
+            >
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFHnwQPjQj5uZwPUGsv4bZAW2fXde1Aiu32Q&s"
+                alt="PayPal"
+                style={{ width: "40px", height: "20px", marginLeft: "10px" }}
+              />
+            </Link>
+            <Link
+              href="https://www.momo.vn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: "none" }}
+            >
+              <img
+                src="https://sieuthituivai.com/wp-content/uploads/2023/07/logo-momo-4.jpg"
+                alt="MoMo"
+                style={{
+                  width: "40px",
+                  height: "20px",
+                  marginLeft: "10px",
+                  objectPosition: "center",
+                }}
+              />
+            </Link>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 };

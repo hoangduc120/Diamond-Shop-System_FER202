@@ -9,7 +9,7 @@ import Cart from "./pages/users/store/Cart";
 import ProductList from "./pages/users/product/ProductList";
 import Measure from "./pages/users/homepage/Measure.jsx";
 import Promotion from "./pages/users/homepage/Promotion.jsx";
-import FAQ from "./pages/users/homepage/FAQ.jsx";
+import FAQ from "./pages/users/homepage/FAQ/FAQ.jsx";
 import AboutUs from "./pages/users/aboutUs/AboutUs.jsx";
 import Contact from "./pages/users/Contact/Contact.jsx";
 import Checkout from "./components/Payment/checkout/Checkout.jsx";

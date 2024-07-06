@@ -41,7 +41,7 @@ const ProductsManagement = () => {
     quantity: 0,
     diamond_status: false,
     image: '',
-    diamond_id: '', // Thêm diamond_id vào state
+    diamond_id: '',
   });
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,8 +53,11 @@ const ProductsManagement = () => {
   const fetchProducts = () => {
     axios.get('/diamonds')
       .then(response => {
-        console.log('Fetched products:', response.data);
-        setProducts(response.data);
+        const updatedProducts = response.data.map(product => ({
+          ...product,
+          diamond_status: product.quantity > 0
+        }));
+        setProducts(updatedProducts);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -78,7 +81,7 @@ const ProductsManagement = () => {
         quantity: 0,
         diamond_status: false,
         image: '',
-        diamond_id: '', // Đặt lại diamond_id khi thêm mới
+        diamond_id: '',
       });
     }
     setOpen(true);
@@ -96,6 +99,8 @@ const ProductsManagement = () => {
       return;
     }
 
+    currentProduct.diamond_status = currentProduct.quantity > 0;
+
     if (isEditing) {
       axios.put(`/diamonds/${currentProduct.diamond_id}`, currentProduct)
         .then(response => {
@@ -107,7 +112,7 @@ const ProductsManagement = () => {
           console.error('Error updating product:', error.response ? error.response.data : error.message);
         });
     } else {
-      currentProduct.diamond_id = uuidv4(); // Sử dụng uuid để tạo diamond_id mới
+      currentProduct.diamond_id = uuidv4();
       axios.post('/diamonds', currentProduct)
         .then(response => {
           console.log('Product added:', response.data);

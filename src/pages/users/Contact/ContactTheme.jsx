@@ -6,13 +6,13 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#C0C0C0", // màu viền mặc định
+            borderColor: "#B19567", // màu viền mặc định
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#295F2D", // màu viền khi hover
+            borderColor: "#535140", // màu viền khi hover
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#295F2D", // màu viền khi focus
+            borderColor: "#B19567", // màu viền khi focus
           },
         },
       },
@@ -21,7 +21,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           "&.Mui-focused": {
-            color: "#295F2D",
+            color: "#B19567",
           },
         },
       },
@@ -33,10 +33,10 @@ export const theme = createTheme({
           padding: "10px 20px", // Padding cho button
         },
         containedPrimary: {
-          backgroundColor: "#295F2D",
+          backgroundColor: "#B19567",
           "&:hover": {
-            backgroundColor: "#FFE67C",
-            color: "#295F2D",
+            backgroundColor: "#CBD2DD",
+            color: "#B19567",
           },
         },
       },
@@ -55,7 +55,7 @@ export const theme = createTheme({
     MuiSvgIcon: {
       styleOverrides: {
         root: {
-          fill: "#295F2D", // Màu sắc cho icon
+          fill: "#000000", // Màu sắc cho icon
         },
       },
     },

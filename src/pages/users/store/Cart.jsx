@@ -29,7 +29,12 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    navigate('/checkout', { state: { cartItems, totalAmount: calculateTotal() } });
+    const orderDetails = {
+      cartItems,
+      totalAmount: calculateTotal(),
+    };
+    localStorage.setItem('orderDetails', JSON.stringify(orderDetails));
+    navigate('/checkout');
   };
 
   if (cartItems.length === 0) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -31,7 +31,15 @@ const ProductList = () => {
   const fetchProducts = () => {
     axios.get('/api/diamonds')
       .then(response => {
-        const activeProducts = response.data.filter(product => product.diamond_status);
+        const products = response.data.map(product => {
+          if (parseInt(product.quantity) === 0) {
+            product.diamond_status = 'Inactive';
+          } else {
+            product.diamond_status = 'Active';
+          }
+          return product;
+        });
+        const activeProducts = products.filter(product => product.diamond_status === 'Active');
         setProducts(activeProducts);
         setFilteredProducts(activeProducts);
       })
@@ -145,11 +153,11 @@ const ProductList = () => {
               <CardMedia
                 component="img"
                 alt={product.name}
-                height="200"
+                height="auto"
                 image={product.image}
               />
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h7" gutterBottom fontWeight="bold">
                   {product.name}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">

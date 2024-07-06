@@ -1,65 +1,76 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
 import {
-  Box,
-  Container,
-  Grid,
-  TextField,
-  Typography,
-  Button,
-  FormControlLabel,
-  Checkbox,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Card,
-  CardContent,
-  CardActions,
-  CardMedia,
-  Avatar,
-} from "@mui/material";
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
-import { useLocation } from "react-router-dom";
+  Box, Container, Grid, TextField, Typography, Button, FormControlLabel, Checkbox, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardMedia, Avatar, Snackbar
+} from '@mui/material';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import axios from 'axios';
 
 const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required("First Name is required"),
-  lastName: Yup.string().required("Last Name is required"),
-  postalCode: Yup.string().required("Postal Code is required"),
-  municipality: Yup.string().required("Municipality is required"),
-  addressLine1: Yup.string().required("Address Line 1 is required"),
-  province: Yup.string().required("Province/Territory is required"),
-  country: Yup.string().required("Country/Region is required"),
-  phone: Yup.string().required("Shipping Phone is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  paymentMethod: Yup.string().required("Payment Method is required"),
-  consent: Yup.boolean().oneOf([true], "Consent is required"),
-  cardNumber: Yup.string().when("paymentMethod", {
-    is: "card",
-    then: Yup.string().required("Card Number is required"),
-  }),
-  expiryDate: Yup.string().when("paymentMethod", {
-    is: "card",
-    then: Yup.string().required("Expiry Date is required"),
-  }),
-  cvv: Yup.string().when("paymentMethod", {
-    is: "card",
-    then: Yup.string().required("CVV/CVC is required"),
-  }),
+  userId: Yup.string().required('User ID is required'),
+  firstName: Yup.string().required('First Name is required'),
+  lastName: Yup.string().required('Last Name is required'),
+  postalCode: Yup.string().required('Postal Code is required'),
+  municipality: Yup.string().required('Municipality is required'),
+  addressLine1: Yup.string().required('Address Line 1 is required'),
+  province: Yup.string().required('Province/Territory is required'),
+  country: Yup.string().required('Country/Region is required'),
+  phone: Yup.string().required('Shipping Phone is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  paymentMethod: Yup.string().required('Payment Method is required'),
+  consent: Yup.boolean().oneOf([true], 'Consent is required'),
 });
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(value);
-};
-
 const Checkout = () => {
-  const location = useLocation();
-  const { cartItems, totalAmount } = location.state || {
-    cartItems: [],
-    totalAmount: 0,
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  useEffect(() => {
+    const storedOrderDetails = JSON.parse(localStorage.getItem('orderDetails'));
+    if (storedOrderDetails) {
+      setOrderDetails(storedOrderDetails);
+    }
+  }, []);
+
+  const handleSubmit = (values) => {
+    const paymentData = {
+      user_id: values.userId,
+      diamonds: orderDetails.cartItems.map(item => ({
+        diamond_id: item.id,
+        quantity: item.quantity
+      })),
+      totalAmount: orderDetails.totalAmount
+    };
+
+    axios.post('/api/payments', paymentData)
+      .then(response => {
+        // Cập nhật diamond_status nếu quantity bằng 0
+        const updatePromises = orderDetails.cartItems.map(item => {
+          if (item.quantity === 0) {
+            return axios.put(`/diamonds/${item.id}`, { ...item, diamond_status: false });
+          }
+          return Promise.resolve();
+        });
+
+        Promise.all(updatePromises)
+          .then(() => {
+            window.location.href = response.data.payUrl; // Chuyển hướng tới cổng thanh toán MoMo
+          })
+          .catch(error => {
+            console.error('Error updating product status:', error);
+            setSnackbarMessage(`Error processing payment: ${error.response ? error.response.data.message : error.message}`);
+            setSnackbarOpen(true);
+          });
+      })
+      .catch(error => {
+        setSnackbarMessage(`Error processing payment: ${error.response ? error.response.data.message : error.message}`);
+        setSnackbarOpen(true);
+      });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -70,8 +81,8 @@ const Checkout = () => {
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            {cartItems.map((item) => (
-              <Card key={item.id} style={{ marginBottom: "20px" }}>
+            {orderDetails && orderDetails.cartItems.map((item, index) => (
+              <Card key={index} style={{ marginBottom: '20px' }}>
                 <CardContent>
                   <CardMedia
                     component="img"
@@ -81,53 +92,50 @@ const Checkout = () => {
                   />
                   <Typography variant="h6">{item.name}</Typography>
                   <Typography variant="body2">Carat: {item.carat}</Typography>
-                  <Typography variant="body2">
-                    Color: {item.color.join(", ")}
-                  </Typography>
-                  <Typography variant="body2">
-                    Price: {formatCurrency(item.price)}
-                  </Typography>
-                  <Typography variant="body2">
-                    Quantity: {item.quantity}
-                  </Typography>
-                  <Typography variant="body2">
-                    Total: {formatCurrency(item.price * item.quantity)}
-                  </Typography>
+                  <Typography variant="body2">Color: {item.color}</Typography>
+                  <Box mt={2}>
+                    <Typography variant="body2">Unit Price: {item.price}đ</Typography>
+                    <Typography variant="body2">Quantity: {item.quantity}</Typography>
+                    <Typography variant="body2">Subtotal: {item.price * item.quantity}đ</Typography>
+                  </Box>
                 </CardContent>
               </Card>
             ))}
-            <Typography variant="h6">
-              Total: {formatCurrency(totalAmount)}
-            </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Formik
               initialValues={{
-                firstName: "",
-                lastName: "",
-                postalCode: "",
-                municipality: "",
-                addressLine1: "",
-                addressLine2: "",
-                province: "",
-                country: "",
-                phone: "",
-                email: "",
-                paymentMethod: "",
-                cardNumber: "",
-                expiryDate: "",
-                cvv: "",
-                saveCard: false,
+                userId: '',
+                firstName: '',
+                lastName: '',
+                postalCode: '',
+                municipality: '',
+                addressLine1: '',
+                addressLine2: '',
+                province: '',
+                country: '',
+                phone: '',
+                email: '',
+                paymentMethod: 'momo',
                 consent: false,
               }}
               validationSchema={validationSchema}
-              onSubmit={(values) => {
-                console.log("Form data", values);
-              }}
+              onSubmit={handleSubmit}
             >
               {({ errors, touched, values, handleChange }) => (
                 <Form>
                   <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        label="User ID"
+                        fullWidth
+                        name="userId"
+                        value={values.userId}
+                        onChange={handleChange}
+                        error={touched.userId && Boolean(errors.userId)}
+                        helperText={touched.userId && errors.userId}
+                      />
+                    </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label="First Name"
@@ -168,9 +176,7 @@ const Checkout = () => {
                         name="municipality"
                         value={values.municipality}
                         onChange={handleChange}
-                        error={
-                          touched.municipality && Boolean(errors.municipality)
-                        }
+                        error={touched.municipality && Boolean(errors.municipality)}
                         helperText={touched.municipality && errors.municipality}
                       />
                     </Grid>
@@ -181,9 +187,7 @@ const Checkout = () => {
                         name="addressLine1"
                         value={values.addressLine1}
                         onChange={handleChange}
-                        error={
-                          touched.addressLine1 && Boolean(errors.addressLine1)
-                        }
+                        error={touched.addressLine1 && Boolean(errors.addressLine1)}
                         helperText={touched.addressLine1 && errors.addressLine1}
                       />
                     </Grid>
@@ -241,39 +245,16 @@ const Checkout = () => {
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      <FormControl
-                        fullWidth
-                        required
-                        error={
-                          touched.paymentMethod && Boolean(errors.paymentMethod)
-                        }
-                      >
-                        <InputLabel>Payment Methods</InputLabel>
+                      <FormControl fullWidth required error={touched.paymentMethod && Boolean(errors.paymentMethod)}>
+                        <InputLabel>Payment Method</InputLabel>
                         <Select
                           name="paymentMethod"
                           value={values.paymentMethod}
                           onChange={handleChange}
                         >
-                          <MenuItem value="cod">
-                            <Avatar
-                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRqjl2TLDhXPpVwVuD8BBo-zDJffpVSTw5EQ&s"
-                              style={{ marginRight: 8 }}
-                            />
-                            Cash On Delivery
-                          </MenuItem>
-                          <MenuItem value="paypal">
-                            <Avatar
-                              src="https://www.nopcommerce.com/images/thumbs/0014294_paypal-express-payment-plugin.png"
-                              style={{ marginRight: 8 }}
-                            />
-                            PayPal
-                          </MenuItem>
-                          <MenuItem value="card">
-                            <Avatar
-                              src="https://www.usatoday.com/money/blueprint/images/uploads/2023/04/01055507/credit-card-vs-debit-card-e1690883737753.jpg"
-                              style={{ marginRight: 8 }}
-                            />
-                            Debit/Credit Card
+                          <MenuItem value="momo">
+                            <Avatar src="https://img.mservice.io/momo-payment/icon/icons/appicon96.png" style={{ marginRight: 8 }} />
+                            MoMo
                           </MenuItem>
                         </Select>
                         {touched.paymentMethod && errors.paymentMethod && (
@@ -282,60 +263,6 @@ const Checkout = () => {
                           </Typography>
                         )}
                       </FormControl>
-                    </Grid>
-                    {values.paymentMethod === "card" && (
-                      <>
-                        <Grid item xs={12} sm={8}>
-                          <TextField
-                            label="Card Number"
-                            fullWidth
-                            name="cardNumber"
-                            value={values.cardNumber}
-                            onChange={handleChange}
-                            error={
-                              touched.cardNumber && Boolean(errors.cardNumber)
-                            }
-                            helperText={touched.cardNumber && errors.cardNumber}
-                          />
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                          <TextField
-                            label="Expiry Date"
-                            placeholder="MM/YY"
-                            fullWidth
-                            name="expiryDate"
-                            value={values.expiryDate}
-                            onChange={handleChange}
-                            error={
-                              touched.expiryDate && Boolean(errors.expiryDate)
-                            }
-                            helperText={touched.expiryDate && errors.expiryDate}
-                          />
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                          <TextField
-                            label="CVV/CVC"
-                            fullWidth
-                            name="cvv"
-                            value={values.cvv}
-                            onChange={handleChange}
-                            error={touched.cvv && Boolean(errors.cvv)}
-                            helperText={touched.cvv && errors.cvv}
-                          />
-                        </Grid>
-                      </>
-                    )}
-                    <Grid item xs={12}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name="saveCard"
-                            checked={values.saveCard}
-                            onChange={handleChange}
-                          />
-                        }
-                        label="Save Card Details for future payments."
-                      />
                     </Grid>
                     <Grid item xs={12}>
                       <FormControlLabel
@@ -349,8 +276,7 @@ const Checkout = () => {
                         }
                         label={
                           <Typography variant="body2">
-                            I have read and consent to jewellery.com processing
-                            my information in accordance with the
+                            I have read and consent to jewellery.com processing my information in accordance with the
                             <a href="#">Privacy statement</a>.
                           </Typography>
                         }
@@ -362,13 +288,8 @@ const Checkout = () => {
                       )}
                     </Grid>
                     <Grid item xs={12}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                      >
-                        Complete Order
+                      <Button type="submit" variant="contained" color="primary" fullWidth>
+                        Complete with MoMo
                       </Button>
                     </Grid>
                   </Grid>
@@ -378,6 +299,12 @@ const Checkout = () => {
           </Grid>
         </Grid>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+      />
     </Container>
   );
 };

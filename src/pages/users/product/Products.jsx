@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
 import { Box, Typography, Card, CardMedia, CardContent, Container } from '@mui/material';
@@ -19,6 +19,7 @@ const Products = () => {
         console.error('Error fetching data:', error);
       });
   }, []);
+  
 
   const settings = {
     dots: false,
@@ -28,6 +29,7 @@ const Products = () => {
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
+    marginLeft: 5,
     responsive: [
       {
         breakpoint: 1024,
@@ -67,16 +69,16 @@ const Products = () => {
         {products.length > 0 ? (
           products.map((product) => (
             <Box key={product.diamond_id} padding={2}>
-              <Card onClick={() => handleProductClick(product.diamond_id)} style={{ cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)' }}>
+              <Card onClick={() => handleProductClick(product.diamond_id)} style={{ cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)', marginLeft: '2em' }}>
                 <CardMedia
                   component="img"
-                  height="200"
+                  height="auto"
                   image={product.image} 
                   alt={product.name}
                   style={{ borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}
                 />
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant="h7" gutterBottom fontWeight="bold">
                     {product.name}
                   </Typography>
                   <Typography variant="body2" style={{ color: '#FFD700', fontWeight: 'bold' }}>
