@@ -25,7 +25,6 @@ import { useEffect } from "react";
 const navbarHeight = 80; // Adjust this value based on your navbar's height
 
 export default function Measure() {
-
   useEffect(() => {
     const handleHashChange = () => {
       const { hash } = window.location;
@@ -35,44 +34,43 @@ export default function Measure() {
           const offsetTop = element.offsetTop - navbarHeight;
           window.scrollTo({
             top: offsetTop,
-            behavior: 'smooth',
+            behavior: "smooth",
           });
         }
       }
     };
 
     const handleLinkClick = (event) => {
-      const targetId = event.target.getAttribute('href');
-      if (targetId && targetId.startsWith('#')) {
+      const targetId = event.target.getAttribute("href");
+      if (targetId && targetId.startsWith("#")) {
         const element = document.querySelector(targetId);
         if (element) {
           event.preventDefault();
           const offsetTop = element.offsetTop - navbarHeight;
           window.scrollTo({
             top: offsetTop,
-            behavior: 'smooth',
+            behavior: "smooth",
           });
         }
       }
     };
 
     document.querySelectorAll('a[href^="#"]').forEach((link) => {
-      link.addEventListener('click', handleLinkClick);
+      link.addEventListener("click", handleLinkClick);
     });
 
     // Initial check if there is a hash in the URL
     handleHashChange();
 
-    window.addEventListener('hashchange', handleHashChange, false);
+    window.addEventListener("hashchange", handleHashChange, false);
 
     return () => {
-      window.removeEventListener('hashchange', handleHashChange, false);
+      window.removeEventListener("hashchange", handleHashChange, false);
       document.querySelectorAll('a[href^="#"]').forEach((link) => {
-        link.removeEventListener('click', handleLinkClick);
+        link.removeEventListener("click", handleLinkClick);
       });
     };
   }, []);
-
 
   return (
     <Box>
