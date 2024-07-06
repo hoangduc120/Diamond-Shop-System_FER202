@@ -43,7 +43,7 @@ const HomePage = () => {
           >
             Weddings are brilliant moments in time. Make it unforgettable
             <br />
-            with pieces that 'll always be adored (and save up to 30%).
+            with pieces that'll always be adored (and save up to 30%).
           </Typography>
           <Box>
             <Button

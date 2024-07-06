@@ -18,7 +18,7 @@ function Login() {
 
   useEffect(() => {
     if (loading) return;
-    if (user) navigate("/homepage");
+    if (user) navigate("/");
   }, [user, loading, navigate]);
 
   const formik = useFormik({

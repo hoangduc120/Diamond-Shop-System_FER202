@@ -15,11 +15,11 @@ import {
   collection,
   where,
   addDoc,
-  updateDoc,
   doc,
   serverTimestamp,
   onSnapshot,
   orderBy,
+  setDoc,
 } from "firebase/firestore";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -45,10 +45,11 @@ const signInWithGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user;
-    const q = query(collection(db, "users"), where("uid", "==", user.uid));
+    const q = query(collection(db, "users"), where("user_id", "==", user.uid));
     const docs = await getDocs(q);
     if (docs.docs.length === 0) {
-      const docRef = await addDoc(collection(db, "users"), {
+      const userData = doc(db, "users", user.uid);
+      await setDoc(userData, {
         user_id: user.uid,
         fullname: user.displayName,
         gender: "",
@@ -62,10 +63,6 @@ const signInWithGoogle = async () => {
         role: "",
       });
       console.log(user.getIdToken);
-      console.log("Document written with ID: ", docRef.id);
-      await updateDoc(doc(db, "users", docRef.id), {
-        user_id: docRef.id,
-      });
     }
   } catch (err) {
     console.error(err);
@@ -85,22 +82,19 @@ const registerWithEmailAndPassword = async (name, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
-    const docRef = await addDoc(collection(db, "users"), {
+    const userData = doc(db, "users", user.uid);
+    await setDoc(userData, {
       user_id: user.uid,
-      fullname: name,
+      fullname: user.displayName,
       gender: "",
-      avatar: "",
-      email: "",
+      avatar: user.photoURL,
+      email: user.email,
       account_status: "",
       auth: "",
-      authProvider: "local",
+      authProvider: "google",
       phone: "",
       address_shipping: "",
       role: "",
-    });
-
-    await updateDoc(doc(db, "users", docRef.id), {
-      user_id: docRef.id,
     });
   } catch (err) {
     console.error(err);
