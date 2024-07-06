@@ -1,214 +1,92 @@
+// src/components/Profile.js
 import { useState, useEffect } from "react";
+import axios from "../../../axiosConfig";
 import {
+  Container,
   Typography,
-  Grid,
-  Card,
-  CardContent,
   TextField,
   Button,
-  Select,
-  MenuItem,
   Box,
-  Container,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 const Profile = () => {
-  const [userData, setUserData] = useState({
-    name: "Hoàng Việt Đức",
-    dob: "2003-03-03",
-    gender: "male",
-    address: "Số 123, Phố XYZ, Quận ABC",
+  const [user, setUser] = useState({
+    fullname: "",
+    gender: false,
+    address_shipping: "",
   });
 
-  const [isEditing, setIsEditing] = useState(false);
+  useEffect(() => {
+    const user_id = localStorage.getItem("user_id");
+    axios
+      .get(`/users/${user_id}`)
+      .then((response) => {
+        setUser(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
 
-  useEffect(() => {}, []);
-
-  const handleEdit = () => {
-    setIsEditing(true);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
   };
 
-  const handleSave = async () => {
-    setIsEditing(false);
-    toast.success(` successfully`);
+  const handleSwitchChange = (e) => {
+    setUser({ ...user, gender: e.target.checked });
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
-
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    if (id === "dob") {
-      setUserData({ ...userData, dob: value });
-    } else {
-      setUserData({ ...userData, [id]: value });
+  const handleSave = () => {
+    if (!user.fullname || !user.address_shipping) {
+      alert("Please fill in all required fields.");
+      return;
     }
+
+    axios
+      .put(`/users/${user.user_id}`, user)
+      .then((response) => {
+        console.log("User updated:", response.data);
+        alert("Profile updated successfully");
+      })
+      .catch((error) => {
+        console.error("Error updating user:", error);
+      });
   };
 
   return (
-    <Container maxWidth="lg">
-      <ToastContainer />
-      <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography
-              variant="h3"
-              gutterBottom
-              style={{
-                color: "#0477CA",
-                display: "flex",
-                justifyContent: "center",
-                fontWeight: "400",
-              }}
-            >
-              Profile
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Typography variant="body2">Họ và tên:</Typography>
-                    <TextField
-                      id="name"
-                      value={userData.name}
-                      variant="outlined"
-                      fullWidth
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2">Ngày sinh:</Typography>
-                    <TextField
-                      id="dob"
-                      value={userData.dob}
-                      variant="outlined"
-                      fullWidth
-                      type="date"
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2">Giới tính:</Typography>
-                    <Select
-                      id="gender"
-                      value={userData.gender}
-                      onChange={(e) =>
-                        setUserData({ ...userData, gender: e.target.value })
-                      }
-                      fullWidth
-                      disabled={!isEditing}
-                    >
-                      <MenuItem value="male">Nam</MenuItem>
-                      <MenuItem value="female">Nữ</MenuItem>
-                      <MenuItem value="other">Khác</MenuItem>
-                    </Select>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body2">Địa chỉ:</Typography>
-                    <TextField
-                      id="address"
-                      value={userData.address}
-                      variant="outlined"
-                      fullWidth
-                      multiline
-                      rows={4}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            {isEditing ? (
-              <>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSave}
-                  sx={{
-                    mr: "1em",
-                    background: "linear-gradient(45deg, #aaa 30%, #434343 90%)",
-                    border: 0,
-                    borderRadius: 15,
-                    boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .3)",
-                    color: "white",
-                    height: 48,
-                    padding: "0 30px",
-                    fontSize: "1.2rem",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    "&:hover": {
-                      background:
-                        "linear-gradient(45deg, #434343  30%, #aaa  90%)",
-                    },
-                  }}
-                >
-                  Lưu
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    background: "linear-gradient(45deg, #aaa 30%, #434343 90%)",
-                    border: 0,
-                    borderRadius: 15,
-                    boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .3)",
-                    color: "white",
-                    height: 48,
-                    padding: "0 30px",
-                    fontSize: "1.2rem",
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    "&:hover": {
-                      background:
-                        "linear-gradient(45deg, #434343  30%, #aaa  90%)",
-                    },
-                  }}
-                  onClick={handleCancel}
-                >
-                  Hủy
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="contained"
-                sx={{
-                  background: "linear-gradient(45deg, #aaa 30%, #434343 90%)",
-                  border: 0,
-                  borderRadius: 15,
-                  boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .3)",
-                  color: "white",
-                  height: 48,
-                  padding: "0 30px",
-                  fontSize: "1.2rem",
-                  fontWeight: "bold",
-                  textTransform: "none",
-                  "&:hover": {
-                    background:
-                      "linear-gradient(45deg, #434343  30%, #aaa  90%)",
-                  },
-                }}
-                onClick={handleEdit}
-              >
-                Chỉnh sửa
-              </Button>
-            )}
-          </Grid>
-        </Grid>
+    <Container maxWidth="sm">
+      <Typography variant="h5" gutterBottom>
+        Profile Information
+      </Typography>
+      <Box component="form" noValidate autoComplete="off">
+        <TextField
+          label="Full Name"
+          name="fullname"
+          fullWidth
+          margin="normal"
+          value={user.fullname}
+          onChange={handleInputChange}
+        />
+        <FormControlLabel
+          control={
+            <Switch checked={user.gender} onChange={handleSwitchChange} />
+          }
+          label={user.gender ? "Male" : "Female"}
+        />
+        <TextField
+          label="Address"
+          name="address_shipping"
+          fullWidth
+          margin="normal"
+          value={user.address_shipping}
+          onChange={handleInputChange}
+        />
+        <Button variant="contained" color="primary" onClick={handleSave}>
+          Save
+        </Button>
       </Box>
     </Container>
   );

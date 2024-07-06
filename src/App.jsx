@@ -18,6 +18,7 @@ import Login from "./pages/users/login/Login.jsx";
 import Profile from "./pages/users/profile/Profile.jsx";
 import MyAccount from "./pages/users/profile/MyAccount.jsx";
 import { Box } from "@mui/material";
+import PaymentManagement from "./pages/admin/dashboard/PaymentManagement.jsx";
 
 function App() {
   return (
@@ -41,6 +42,10 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/account" element={<MyAccount />} />
+              <Route
+                path="/paymentmanagement"
+                element={<PaymentManagement />}
+              />
             </Routes>
           </Box>
           <Footer />
