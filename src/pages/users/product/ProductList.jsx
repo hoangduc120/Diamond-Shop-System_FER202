@@ -145,11 +145,11 @@ const ProductList = () => {
               <CardMedia
                 component="img"
                 alt={product.name}
-                height="200"
+                height="auto"
                 image={product.image}
               />
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h7" gutterBottom fontWeight="bold">
                   {product.name}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
