@@ -14,30 +14,38 @@ import AboutUs from "./pages/users/aboutUs/AboutUs.jsx";
 import Contact from "./pages/users/Contact/Contact.jsx";
 import Checkout from "./components/Payment/checkout/Checkout.jsx";
 import HomePage from "./pages/users/homepage/HomePage.jsx";
-
+import Login from "./pages/users/login/Login.jsx";
+import { Box, Container } from "@mui/material";
+import "./App.css";
+import KnowledgeDiamond from "./pages/users/homepage/KnowledgeDiamond.jsx";
 
 function App() {
   return (
     <Provider store={store}>
       <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/dashboard/*" element={<Dashboard />} />
-          <Route path="/diamonds" element={<ProductList />} />
-          <Route path="/jewelrymeasurementguide" element={<Measure />} />
-          <Route path="/saleoff" element={<Promotion />} />
-          <Route path="/faqs" element={<FAQ />} />
-          <Route path="/aboutus" element={<AboutUs />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-        </Routes>
-        <Footer />
+      <div className="app">
+          <Navbar />
+          <Box component="main" sx={{ mt: 10, mb: 2, flexGrow: 1 }}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/dashboard/*" element={<Dashboard />} />
+              <Route path="/diamonds" element={<ProductList />} />
+              <Route path="/measureguide" element={<Measure />} />
+              <Route path="/saleoff" element={<Promotion />} />
+              <Route path="/faqs" element={<FAQ />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/knowledgediamond" element={<KnowledgeDiamond />} />
+            </Routes>
+          </Box>
+          <Footer />
+        </div>
       </Router>
     </Provider>
   );
 }
-
 export default App;

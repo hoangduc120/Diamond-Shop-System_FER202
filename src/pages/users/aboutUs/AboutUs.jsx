@@ -11,10 +11,6 @@ const theme = createTheme({
     },
   },
   typography: {
-    h3: {
-      fontSize: "2rem",
-      fontWeight: "bold",
-    },
     body1: {
       fontSize: "1rem",
       lineHeight: 1.5,
@@ -50,9 +46,9 @@ export default function AboutUs() {
       <CssBaseline />
       <Box
         sx={{
-          backgroundImage: `url('https://instoremag.com/wp-content/uploads/2022/08/Zadok.jpg')`,
+          backgroundImage: `url('https://www.wilsonandsonjewelers.com/public/1.0/uploads/source/homepage/desktop/wilson_amp_son_showroom.jpg')`,
           backgroundSize: "cover", // Đảm bảo hình ảnh bao phủ toàn bộ phần tử
-          backgroundPosition: "10% 60%", // Đặt hình ảnh ở giữa
+          backgroundPosition: "10% 30%", // Đặt hình ảnh ở giữa
           backgroundRepeat: "no-repeat", // Không lặp lại hình ảnh
           height: "50vh",
           display: "flex",
@@ -61,14 +57,15 @@ export default function AboutUs() {
           textAlign: "center",
         }}
       ></Box>
-
       <Box display="flex" alignItems="center" justifyContent="center">
-        <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
           <Typography
-            variant="h4"
+            variant="h2"
             display="flex"
             justifyContent="center"
             gutterBottom
+            fontWeight="bold"
+            sx={{fontFamily:"Times New Roman"}}
           >
             Welcome to Diamond Shop
           </Typography>
@@ -84,6 +81,7 @@ export default function AboutUs() {
             gutterBottom
             display="flex"
             justifyContent="center"
+            sx={{fontFamily:"Times New Roman"}}
           >
             Our Story
           </Typography>
@@ -99,6 +97,7 @@ export default function AboutUs() {
             gutterBottom
             display="flex"
             justifyContent="center"
+            sx={{fontFamily:"Times New Roman"}}
           >
             Our Mission
           </Typography>
@@ -113,6 +112,7 @@ export default function AboutUs() {
             gutterBottom
             display="flex"
             justifyContent="center"
+            sx={{fontFamily:"Times New Roman"}}
           >
             Our Values
           </Typography>
@@ -135,6 +135,7 @@ export default function AboutUs() {
             gutterBottom
             display="flex"
             justifyContent="center"
+            sx={{fontFamily:"Times New Roman"}}
           >
             Visit Us
           </Typography>
