@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { createTheme, ThemeProvider, Container, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { createTheme, ThemeProvider, Container, Typography, Accordion, AccordionSummary, AccordionDetails, CssBaseline, Box } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const faqData = {
@@ -218,7 +218,7 @@ function FAQ() {
 
   return (
     <ThemeProvider theme={theme}>
-      
+      <CssBaseline />
       <Container style={{ marginTop: '2em', maxWidth: '1200px' }}>
         <Typography variant="h2" component="h2" align="center" gutterBottom>
           Frequently Asked Questions
