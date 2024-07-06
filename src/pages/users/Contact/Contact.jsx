@@ -9,7 +9,6 @@ import {
 import PlaceIcon from "@mui/icons-material/Place";
 import PhoneIcon from "@mui/icons-material/Phone";
 import CssBaseline from "@mui/material/CssBaseline";
-import React from "react";
 import { theme } from "./ContactTheme";
 import ContactForm from "./ContactForm";
 
@@ -29,7 +28,12 @@ export default function Contact() {
           textAlign: "center",
         }}
       >
-        <Typography textAlign="center" variant="h2" gutterBottom sx={{ mt: 2, fontFamily:"Times New Roman", color: "white" }}>
+        <Typography
+          textAlign="center"
+          variant="h2"
+          gutterBottom
+          sx={{ mt: 2, fontFamily: "Times New Roman", color: "white" }}
+        >
           Contact Us
         </Typography>
       </Box>
@@ -48,13 +52,13 @@ export default function Contact() {
               </Typography>
               <br />
               <Box display="flex">
-                <PlaceIcon sx={{mr: 1}}/>
+                <PlaceIcon sx={{ mr: 1 }} />
                 <Typography variant="body1" gutterBottom>
                   Vinhomes Grand Park
                 </Typography>
               </Box>
               <Box display="flex">
-                <PhoneIcon sx={{mr: 1}}/>
+                <PhoneIcon sx={{ mr: 1 }} />
                 <Typography gutterBottom> +84 794442282</Typography>
               </Box>
               <br />

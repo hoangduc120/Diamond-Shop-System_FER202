@@ -1,6 +1,5 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import React from "react";
 import { Alert, Box, Button, Grid, TextField } from "@mui/material";
 
 export default function ContactForm() {
