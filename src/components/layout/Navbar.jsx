@@ -8,26 +8,36 @@ import {
   Box,
   Menu,
   MenuItem,
+  Avatar,
+  Divider,
+  ListItemIcon,
 } from "@mui/material";
-import { ShoppingCart, Person, Search } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import {
+  ShoppingCart,
+  Search,
+  Logout,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowRight as KeyboardArrowRightIcon,
+} from "@mui/icons-material";
+import { Link, useNavigate } from "react-router-dom";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useState } from "react";
+import { logout } from "../../components/config/firebase";
 
 const Navbar = () => {
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [submenuEl, setSubmenuEl] = useState(null);
+  const [accountEl, setAccountEl] = useState(null);
+  const navigate = useNavigate();
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
+  const handleClose = () => {
     setAnchorEl(null);
     setSubmenuEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login"); // Điều hướng về trang đăng nhập sau khi đăng xuất
   };
 
   const handleSubmenuOpen = (event) => {
@@ -36,6 +46,14 @@ const Navbar = () => {
 
   const handleSubmenuClose = () => {
     setSubmenuEl(null);
+  };
+
+  const handleAccountMenuOpen = (event) => {
+    setAccountEl(event.currentTarget);
+  };
+
+  const handleAccountMenuClose = () => {
+    setAccountEl(null);
   };
 
   return (
@@ -92,9 +110,13 @@ const Navbar = () => {
               color="inherit"
               size="small"
               disableRipple
-              onMouseOver={handleMenuOpen}
+              onMouseOver={(event) => setAnchorEl(event.currentTarget)}
               endIcon={<KeyboardArrowDownIcon />}
-              sx={{ margin: '0 8px', textTransform: 'none', '&:hover': { color: '#B19567', backgroundColor: 'transparent' } }}
+              sx={{
+                margin: "0 8px",
+                textTransform: "none",
+                "&:hover": { color: "#B19567", backgroundColor: "transparent" },
+              }}
             >
               Blog
             </Button>
@@ -102,39 +124,44 @@ const Navbar = () => {
               anchorEl={anchorEl}
               keepMounted
               open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
+              onClose={handleClose}
               MenuListProps={{
-                onMouseLeave: handleMenuClose,
-                onMouseEnter: () => setAnchorEl(anchorEl)
+                onMouseLeave: handleClose,
+                onMouseEnter: () => setAnchorEl(anchorEl),
               }}
-              sx={{ '& .MuiMenuItem-root': { display: 'flex', alignItems: 'center' } }}
+              sx={{
+                "& .MuiMenuItem-root": {
+                  display: "flex",
+                  alignItems: "center",
+                },
+              }}
             >
               <MenuItem
                 onMouseOver={handleSubmenuOpen}
-                onMouseLeave={handleMenuClose}
-                sx={{ display: 'flex', alignItems: 'center' }}
+                onMouseLeave={handleClose}
+                sx={{ display: "flex", alignItems: "center" }}
               >
                 Knowledge
-                <KeyboardArrowRightIcon sx={{ marginLeft: 'auto' }} />
+                <KeyboardArrowRightIcon sx={{ marginLeft: "auto" }} />
                 <Menu
                   anchorEl={submenuEl}
                   open={Boolean(submenuEl)}
                   onClose={handleSubmenuClose}
                   MenuListProps={{
                     onMouseLeave: handleSubmenuClose,
-                    onMouseEnter: () => setSubmenuEl(submenuEl)
+                    onMouseEnter: () => setSubmenuEl(submenuEl),
                   }}
-                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "left" }}
                 >
-                  <MenuItem onClick={handleMenuClose}>Diamond</MenuItem>
-                  <MenuItem onClick={handleMenuClose}>Jewelry</MenuItem>
+                  <MenuItem onClick={handleClose}>Diamond</MenuItem>
+                  <MenuItem onClick={handleClose}>Jewelry</MenuItem>
                 </Menu>
               </MenuItem>
               <MenuItem
                 onMouseOver={handleSubmenuClose}
-                onClick={handleMenuClose}
-                sx={{ '&:hover': { backgroundColor: 'transparent' } }}
+                onClick={handleClose}
+                sx={{ "&:hover": { backgroundColor: "transparent" } }}
               >
                 Measure Guide
               </MenuItem>
@@ -249,8 +276,7 @@ const Navbar = () => {
             </IconButton>
             <IconButton
               color="inherit"
-              component={Link}
-              to="/dashboard"
+              onClick={handleAccountMenuOpen}
               disableRipple
               sx={{
                 "&:hover": {
@@ -258,8 +284,63 @@ const Navbar = () => {
                 },
               }}
             >
-              <Person />
+              <Avatar />
             </IconButton>
+            <Menu
+              anchorEl={accountEl}
+              id="account-menu"
+              open={Boolean(accountEl)}
+              onClose={handleAccountMenuClose}
+              onClick={handleAccountMenuClose}
+              PaperProps={{
+                elevation: 0,
+                sx: {
+                  overflow: "visible",
+                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                  mt: 1.5,
+                  "& .MuiAvatar-root": {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                  "&::before": {
+                    content: '""',
+                    display: "block",
+                    position: "absolute",
+                    top: 0,
+                    right: 14,
+                    width: 10,
+                    height: 10,
+                    bgcolor: "background.paper",
+                    transform: "translateY(-50%) rotate(45deg)",
+                    zIndex: 0,
+                  },
+                },
+              }}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+              <MenuItem onClick={() => navigate("/profile")}>
+                <Avatar />
+                Proile
+              </MenuItem>
+              <MenuItem onClick={() => navigate("/account")}>
+                <Avatar />
+                My account
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={() => navigate("/dashboard")}>
+                <Avatar />
+                Dashboard
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <Logout fontSize="small" />
+                  Đăng xuất
+                </ListItemIcon>
+              </MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </Container>

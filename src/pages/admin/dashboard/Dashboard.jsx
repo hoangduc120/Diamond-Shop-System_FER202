@@ -6,6 +6,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Button,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -57,12 +58,12 @@ const Dashboard = () => {
             </ListItemIcon>
             <ListItemText primary="Products" style={{ color: "white" }} />
           </ListItem>
-          <button className="dashboard__btn" onClick={logout}>
+          <Button className="dashboard__btn" onClick={logout}>
             <ListItemIcon>
               <ExitToApp style={{ color: "white" }} />
             </ListItemIcon>
             <ListItemText primary="Logout" style={{ color: "white" }} />
-          </button>
+          </Button>
         </List>
       </Box>
       <Box style={{ flexGrow: 1, padding: "20px" }}>
