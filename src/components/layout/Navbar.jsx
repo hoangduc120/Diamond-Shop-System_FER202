@@ -11,6 +11,9 @@ import {
   Avatar,
   Divider,
   ListItemIcon,
+  Badge,
+  TextField,
+  InputAdornment
 } from "@mui/material";
 import {
   ShoppingCart,
@@ -22,13 +25,16 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../components/config/firebase";
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [submenuEl, setSubmenuEl] = useState(null);
   const [accountEl, setAccountEl] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const cartItemCount = useSelector((state) => state.cart.items.length);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -54,6 +60,16 @@ const Navbar = () => {
 
   const handleAccountMenuClose = () => {
     setAccountEl(null);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?query=${searchQuery.trim()}`);
+    }
   };
 
   return (
@@ -250,17 +266,28 @@ const Navbar = () => {
             </Typography>
           </Box>
           <Box style={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              color="inherit"
-              disableRipple
-              sx={{
-                "&:hover": {
-                  color: "#B19567",
-                },
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchSubmit();
+                }
               }}
-            >
-              <Search />
-            </IconButton>
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleSearchSubmit}>
+                      <Search />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ marginRight: "10px" }}
+            />
             <IconButton
               color="inherit"
               component={Link}
@@ -272,7 +299,9 @@ const Navbar = () => {
                 },
               }}
             >
-              <ShoppingCart />
+              <Badge badgeContent={cartItemCount} color="primary">
+                <ShoppingCart />
+              </Badge>
             </IconButton>
             <IconButton
               color="inherit"

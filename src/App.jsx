@@ -22,6 +22,7 @@ import PaymentManagement from "./pages/admin/dashboard/PaymentManagement.jsx";
 import ScrollToTopButton from "./components/scrollToTopButton/scrollTopButton.jsx";
 import OrderManagement from "./pages/admin/dashboard/OrderManagement.jsx";
 import UserManagement from "./pages/admin/dashboard/UserManagement.jsx";
+import SearchResults from "./pages/users/homepage/Search/SearchResults.jsx";
 
 function App() {
   return (
@@ -48,7 +49,7 @@ function App() {
               <Route path="/paymentmanagement" element={<PaymentManagement />} />
               <Route path="/ordermanagement" element={<OrderManagement />} />
               <Route path="/usermanagement" element={<UserManagement />} />
-        
+              <Route path="/search" element={<SearchResults />} />
             </Routes>
           </Box>
           <Footer />
