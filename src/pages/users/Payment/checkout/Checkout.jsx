@@ -216,12 +216,10 @@ const Checkout = () => {
                         label="Address "
                         fullWidth
                         name="address"
-                        value={values.addressLine1}
+                        value={values.address}
                         onChange={handleChange}
-                        error={
-                          touched.addressLine1 && Boolean(errors.addressLine1)
-                        }
-                        helperText={touched.addressLine1 && errors.addressLine1}
+                        error={touched.address && Boolean(errors.address)}
+                        helperText={touched.address && errors.address}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
