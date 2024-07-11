@@ -5,10 +5,12 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background: url('https://gcs.tripi.vn/public-tripi/tripi-feed/img/474087ecU/anh-nen-powerpoint-xam-khoi_022119957.jpg') no-repeat center center fixed;
+  background-size: cover;
+
 
   &__container {
-    background: white;
+    background: #F5F5F5;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

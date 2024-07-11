@@ -25,6 +25,7 @@ import { useEffect } from "react";
 const navbarHeight = 80; // Adjust this value based on your navbar's height
 
 export default function Measure() {
+
   useEffect(() => {
     const handleHashChange = () => {
       const { hash } = window.location;
@@ -73,7 +74,7 @@ export default function Measure() {
   }, []);
 
   return (
-    <Box>
+    <Box sx={{mt: 3}}>
       <Box
         sx={{
           backgroundImage: `url('https://www.lialijewellery.com/pub/media/catalog/category/Diamond_Engagement_Ring.jpg')`,

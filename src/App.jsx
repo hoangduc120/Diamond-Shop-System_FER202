@@ -1,9 +1,10 @@
+import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./pages/users/store/store.jsx";
-import Navbar from "./components/layout/Navbar";
+import Navbar from "./components/layout/NavBar/Navbar.jsx";
 import Dashboard from "./pages/admin/dashboard/Dashboard.jsx";
-import Footer from "./components/layout/Footer";
+import Footer from "./components/layout/Footer/Footer.jsx";
 import ProductDetail from "./pages/users/product/ProductDetail.jsx";
 import Cart from "./pages/users/store/Cart";
 import ProductList from "./pages/users/product/ProductList";
@@ -18,25 +19,28 @@ import Login from "./pages/users/login/Login.jsx";
 import Reset from "./pages/users/login/Reset.jsx";
 import Register from "./pages/guest/Register.jsx";
 import Profile from "./pages/users/profile/Profile.jsx";
-import MyAccount from "./pages/users/profile/MyAccount.jsx";
 import { Box } from "@mui/material";
 import PaymentManagement from "./pages/admin/dashboard/PaymentManagement.jsx";
 import ScrollToTopButton from "./components/scrollToTopButton/scrollTopButton.jsx";
-import OrderManagement from "./pages/admin/dashboard/OrderManagement.jsx";
 import UserManagement from "./pages/admin/dashboard/UserManagement.jsx";
+import DiamondKnowledge from "./pages/users/homepage/DiamondKnowledge.jsx";
+import JewelryKnowledge from "./pages/users/homepage/JewelryKnowledge.jsx";
+import ScrollToTop from "./components/scrollToTop/ScrollToTop.jsx";
+import SearchResults from "./pages/users/homepage/search/SearchResult.jsx";
 
 function App() {
   return (
     <Provider store={store}>
       <Router>
         <div className="app">
+          <ScrollToTop />
           <Navbar />
-          <Box component="main" sx={{ mt: 10, mb: 2, flexGrow: 1 }}>
+          <Box component="main" sx={{ mt: 5, flexGrow: 1 }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/dashboard/*" element={<Dashboard />} />
               <Route path="/diamonds" element={<ProductList />} />
-              <Route path="/jewelrymeasurementguide" element={<Measure />} />
+              <Route path="/measureguide" element={<Measure />} />
               <Route path="/saleoff" element={<Promotion />} />
               <Route path="/faqs" element={<FAQ />} />
               <Route path="/aboutus" element={<AboutUs />} />
@@ -48,13 +52,17 @@ function App() {
               <Route path="/reset" element={<Reset />} />
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/account" element={<MyAccount />} />
               <Route
                 path="/paymentmanagement"
                 element={<PaymentManagement />}
               />
-              <Route path="/ordermanagement" element={<OrderManagement />} />
+
               <Route path="/usermanagement" element={<UserManagement />} />
+              <Route path="/diamondknowledge" element={<DiamondKnowledge />} />
+              <Route path="/jewelryknowledge" element={<JewelryKnowledge />} />
+              <Route path="/reset" element={<Reset />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/search" element={<SearchResults />} />
             </Routes>
           </Box>
           <Footer />
