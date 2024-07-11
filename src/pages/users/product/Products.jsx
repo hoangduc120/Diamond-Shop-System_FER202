@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
-import { Box, Typography, Card, CardMedia, CardContent, Container } from '@mui/material';
+import { Box, Typography, Card, CardMedia, CardContent, Container, Stack, Skeleton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -9,17 +9,20 @@ import "slick-carousel/slick/slick-theme.css";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get('/api/diamonds')
       .then(response => {
         setProducts(response.data);
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
+        setLoading(false);
       });
   }, []);
-  
+
 
   const settings = {
     dots: false,
@@ -29,7 +32,8 @@ const Products = () => {
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
-    marginLeft: 5,
+    autoplay: true,
+    autoplaySpeed: 3000,
     responsive: [
       {
         breakpoint: 1024,
@@ -60,32 +64,44 @@ const Products = () => {
     navigate(`/product/${productId}`);
   };
 
+  if (loading) {
+    return (
+      <Stack direction="row" spacing={2} justifyContent="center" alignItems="center" height="30vh" >
+        <Skeleton variant="rounded" width={210} height={200} />
+        <Skeleton variant="rounded" width={210} height={200} />
+        <Skeleton variant="rounded" width={210} height={200} />
+        <Skeleton variant="rounded" width={210} height={200} />
+      </Stack>
+    );
+  }
+
   return (
     <Container maxWidth="lg" style={{ padding: '40px 0' }}>
-      <Typography variant="h4" gutterBottom style={{ textAlign: 'center', marginBottom: '40px' }}>
-      Best Selling Products.
-      </Typography>
       <Slider {...settings}>
         {products.length > 0 ? (
           products.map((product) => (
             <Box key={product.diamond_id} padding={2}>
-              <Card onClick={() => handleProductClick(product.diamond_id)} style={{ cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)', marginLeft: '2em' }}>
+              <Card onClick={() => handleProductClick(product.diamond_id)} style={{
+                cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)', marginLeft: '2em', transition: 'transform 0.3s, box-shadow 0.3s',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 8px 16px rgba(0,0,0,0.3)'
+                }
+              }}>
                 <CardMedia
                   component="img"
                   height="auto"
-                  image={product.image} 
+                  image={product.image}
                   alt={product.name}
                   style={{ borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}
                 />
-                <CardContent>
+                <CardContent sx={{ textAlign: "center" }}>
                   <Typography variant="h7" gutterBottom fontWeight="bold">
                     {product.name}
                   </Typography>
-                  <Typography variant="body2" style={{ color: '#FFD700', fontWeight: 'bold' }}>
+                  <br />
+                  <Typography variant="h8" style={{ color: '#B19567', fontWeight: 'bold' }}>
                     {product.price}đ
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Carat: {product.carat}
                   </Typography>
                 </CardContent>
               </Card>

@@ -1,3 +1,4 @@
+
 import {
   Facebook,
   Instagram,
@@ -86,15 +87,17 @@ export default function Knowledge() {
           textAlign: "center",
         }}
       >
-        <Typography
+        
+      </Box>
+      <Container>
+      <Typography
           variant="h2"
+          gutterBottom
           fontWeight="bold"
-          sx={{ color: "white", fontFamily: "Times New Roman" }}
+          sx={{ marginTop: "1rem", fontFamily: "Times New Roman" }}
         >
           Jewelry Knowledge
         </Typography>
-      </Box>
-      <Container>
         <Grid container spacing={2} sx={{ marginTop: "1rem" }}>
           <Grid item xs={6}>
             <Typography variant="body2" color="text.secondary">
@@ -164,7 +167,7 @@ export default function Knowledge() {
           sx={{ padding: "1rem", marginBottom: "2rem", marginTop: "2rem" }}
         >
           <List component="nav">
-            <ListItem button component="a" href="#section1">
+            <ListItem  component="a" href="#section1">
               <ListItemText
                 primary="Common Types of Earrings"
                 sx={{
@@ -175,7 +178,7 @@ export default function Knowledge() {
                 }}
               />
             </ListItem>
-            <ListItem button component="a" href="#section2">
+            <ListItem  component="a" href="#section2">
               <ListItemText
                 primary="Common Types of Earring Buckles"
                 sx={{
@@ -186,7 +189,7 @@ export default function Knowledge() {
                 }}
               />
             </ListItem>
-            <ListItem button component="a" href="#section3">
+            <ListItem  component="a" href="#section3">
               <ListItemText
                 primary="Common Types of Prong Settings"
                 sx={{

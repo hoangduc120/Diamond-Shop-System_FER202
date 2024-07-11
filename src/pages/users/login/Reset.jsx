@@ -25,8 +25,8 @@ function Reset() {
 
     validationSchema: Yup.object().shape({
       email: Yup.string()
-        .required("Không để trống")
-        .email("Email không hợp lệ"),
+        .required("Required")
+        .email("Email invalid"),
     }),
   });
   return (

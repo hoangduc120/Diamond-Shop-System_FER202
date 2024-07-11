@@ -30,11 +30,11 @@ function Register() {
       await registerWithEmailAndPassword(name, email, password);
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required("Không để trống"),
+      name: Yup.string().required("Required"),
       email: Yup.string()
-        .required("Không để trống")
-        .email("Email không hợp lệ"),
-      password: Yup.string().required("Không để trống"),
+        .required("Required")
+        .email("Email invalid"),
+      password: Yup.string().required("Required"),
     }),
   });
   return (

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
-  Box, Container, Grid, TextField, Typography, Button, FormControlLabel, Checkbox, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardMedia, Avatar, Snackbar
+  Box, Container, Grid, TextField, Typography, Button, FormControlLabel, Checkbox, Select, MenuItem, InputLabel, FormControl, Avatar, Snackbar,
+  Paper,
+  Divider
 } from '@mui/material';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -11,7 +13,7 @@ import { doc, getDoc } from 'firebase/firestore';
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required('First Name is required'),
   lastName: Yup.string().required('Last Name is required'),
-  addressLine1: Yup.string().required('Address Line 1 is required'),
+  address: Yup.string().required('Address is required'),
   province: Yup.string().required('Province/Territory is required'),
   country: Yup.string().required('Country/Region is required'),
   phone: Yup.string().required('Shipping Phone is required'),
@@ -54,7 +56,7 @@ const Checkout = () => {
         quantity: item.quantity
       })),
       totalAmount: orderDetails.totalAmount,
-      paymentChoice: values.paymentMethod,
+      paymentChoice: values.paymentMethod,    
     };
 
     axios.post('/api/payments', paymentData)
@@ -67,12 +69,25 @@ const Checkout = () => {
           setSnackbarMessage('Payment URL not received.');
           setSnackbarOpen(true);
         }
+        console.log('Response from backend:', response);
+        if (response.data && response.data.payUrl) {
+          window.location.href = response.data.payUrl; // Chuyển hướng tới cổng thanh toán MoMo hoặc VNPay
+        } else {
+          console.error('Payment URL not received:', response.data);
+          setSnackbarMessage('Payment URL not received.');
+          setSnackbarOpen(true);
+        }
       })
       .catch(error => {
+        console.error('Error processing payment:', error.response ? error.response.data : error.message);
         console.error('Error processing payment:', error.response ? error.response.data : error.message);
         setSnackbarMessage(`Error processing payment: ${error.response ? error.response.data.message : error.message}`);
         setSnackbarOpen(true);
       });
+  };
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
 
   const handlePaymentMethodChange = (event) => {
@@ -85,42 +100,48 @@ const Checkout = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box mt={5}>
-        <Typography variant="h4" gutterBottom>
-          Order Summary
+    <Container maxWidth="lg" >
+      <Box mt={5} mb={5}>
+        <Typography variant="h4" gutterBottom fontFamily="Times New Roman" textAlign="center">
+          Checkout
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            {orderDetails && orderDetails.cartItems.map((item, index) => (
-              <Card key={index} style={{ marginBottom: '20px' }}>
-                <CardContent>
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={item.image}
-                    alt={item.name}
-                  />
-                  <Typography variant="h6">{item.name}</Typography>
-                  <Typography variant="body2">Carat: {item.carat}</Typography>
-                  <Typography variant="body2">Color: {item.color}</Typography>
-                  <Box mt={2}>
-                    <Typography variant="body2">Unit Price: {item.price}đ</Typography>
-                    <Typography variant="body2">Quantity: {item.quantity}</Typography>
-                    <Typography variant="body2">Subtotal: {item.price * item.quantity}đ</Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
+          <Paper elevation={3} style={{ padding: '20px' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>Product</Grid>
+                <Grid item xs={2}>Price</Grid>
+                <Grid item xs={2}>Quantity</Grid>
+                <Grid item xs={2}>Total</Grid>
+              </Grid>
+              <Divider style={{ margin: '10px 0' }} />
+              {orderDetails && orderDetails.cartItems.map((item) => (
+                <Grid container spacing={2} key={item.id} alignItems="center">
+                  <Grid item xs={6}>
+                    <Box display="flex" alignItems="center">
+                      <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px' }} />
+                      <Typography ml={1}>{item.name}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>{formatCurrency(item.price)}</Grid>
+                  <Grid item xs={2}>
+                    <Box display="flex" alignItems="center">
+                      <Typography ml={3}>{item.quantity}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>{formatCurrency(item.price * item.quantity)}</Grid>
+                </Grid>
+              ))}
+            </Paper>
           </Grid>
           <Grid item xs={12} md={6}>
             <Formik
               initialValues={{
                 firstName: userData.fullname ? userData.fullname.split(' ')[0] : '',
                 lastName: userData.fullname ? userData.fullname.split(' ')[1] : '',
-                addressLine1: userData.address_shipping || '',
+                address: userData.address_shipping || '',
                 province: '',
-                country: '',
+                country: '',          
                 phone: userData.phone || '',
                 email: userData.email || '',
                 paymentMethod: 'MOMO',
@@ -157,13 +178,13 @@ const Checkout = () => {
                     </Grid>
                     <Grid item xs={12}>
                       <TextField
-                        label="Address Line 1"
+                        label="Address"
                         fullWidth
-                        name="addressLine1"
-                        value={values.addressLine1}
+                        name="address"
+                        value={values.address}
                         onChange={handleChange}
-                        error={touched.addressLine1 && Boolean(errors.addressLine1)}
-                        helperText={touched.addressLine1 && errors.addressLine1}
+                        error={touched.address && Boolean(errors.address)}
+                        helperText={touched.address && errors.address}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -214,6 +235,7 @@ const Checkout = () => {
                       <FormControl fullWidth required error={touched.paymentMethod && Boolean(errors.paymentMethod)}>
                         <InputLabel>Payment Method</InputLabel>
                         <Select
+                          label="Payment Method"
                           name="paymentMethod"
                           value={values.paymentMethod}
                           onChange={(e) => {
@@ -226,7 +248,7 @@ const Checkout = () => {
                             MoMo
                           </MenuItem>
                           <MenuItem value="VNPAY">
-                            <Avatar src="https://static.ybox.vn/2021/1/21/1609389414843-pham1080-150x150.png" style={{ marginRight: 8 }} />
+                            <Avatar src="https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg" style={{ marginRight: 8 }} />
                             VNPay
                           </MenuItem>
                         </Select>
@@ -241,7 +263,6 @@ const Checkout = () => {
                       <FormControlLabel
                         control={
                           <Checkbox
-                            required
                             name="consent"
                             checked={values.consent}
                             onChange={handleChange}
@@ -250,7 +271,7 @@ const Checkout = () => {
                         label={
                           <Typography variant="body2">
                             I have read and consent to jewellery.com processing my information in accordance with the
-                            <a href="#">Privacy statement</a>.
+                            <a href="#"> Privacy statement</a>.
                           </Typography>
                         }
                       />

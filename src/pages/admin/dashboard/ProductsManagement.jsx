@@ -23,13 +23,28 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  styled,
+  DialogContentText,
+  Box,
+  TablePagination,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
+import { useDispatch } from 'react-redux';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { RingLoader } from 'react-spinners';
+
+const StyledTableCell = styled(TableCell)({
+  fontWeight: 'bold',
+});
 
 const ProductsManagement = () => {
   const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentProduct, setCurrentProduct] = useState({
     name: '',
     shape: '',
@@ -58,9 +73,11 @@ const ProductsManagement = () => {
           diamond_status: product.quantity > 0
         }));
         setProducts(updatedProducts);
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
+        setLoading(false);
       });
   };
 
@@ -88,14 +105,14 @@ const ProductsManagement = () => {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setConfirmClose(true);
   };
 
   const handleSave = () => {
     console.log('Current Product:', currentProduct);
 
     if (!currentProduct.name || !currentProduct.carat || !currentProduct.price || !currentProduct.origin || !currentProduct.quantity || !currentProduct.image) {
-      alert('Please fill in all required fields.');
+      notifyFail();
       return;
     }
 
@@ -106,7 +123,8 @@ const ProductsManagement = () => {
         .then(response => {
           console.log('Product updated:', response.data);
           fetchProducts();
-          handleClose();
+          setOpen(false);
+          notifySuccess();
         })
         .catch(error => {
           console.error('Error updating product:', error.response ? error.response.data : error.message);
@@ -117,7 +135,8 @@ const ProductsManagement = () => {
         .then(response => {
           console.log('Product added:', response.data);
           fetchProducts();
-          handleClose();
+          setOpen(false);
+          notifySuccess();
         })
         .catch(error => {
           console.error('Error adding product:', error.response ? error.response.data : error.message);
@@ -142,11 +161,87 @@ const ProductsManagement = () => {
 
   const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const [confirmClose, setConfirmClose] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleConfirmClose = (confirm) => {
+    if (confirm) {
+      setOpen(false);
+    }
+    setConfirmClose(false);
+  };
+
+  const [confirmDeleteItemId, setConfirmDeleteItemId] = useState(null);
+
+  const handleRemove = (id) => {
+    setConfirmDeleteItemId(id); // Set the item ID for confirmation
+  };
+
+  const handleConfirmDelete = () => {
+    dispatch(handleDelete(confirmDeleteItemId));
+    setConfirmDeleteItemId(null); // Clear the confirmation state after deletion
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDeleteItemId(null); // Clear the confirmation state if canceled
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const notifySuccess = () => toast.success('Save Successfully!', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+  });
+
+  const notifyFail = () => toast.error('Please fill in all required fields!', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+  });
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+        <RingLoader color="#B19567" size={80} />
+      </Box>
+    );
+  }
+
   return (
     <Container maxWidth="lg" style={{ marginTop: '20px' }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ fontFamily: "Times New Roman" }}>
         Products Management
       </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          marginBottom: '10px', backgroundColor: "#B19567",
+          "&:hover": {
+            backgroundColor: "#2c3e50",
+          },
+        }}
+        onClick={() => handleClickOpen(null)}>+ Add Product</Button>
       <TextField
         label="Search"
         variant="outlined"
@@ -155,28 +250,27 @@ const ProductsManagement = () => {
         value={searchTerm}
         onChange={handleSearchChange}
       />
-      <Button variant="contained" color="primary" style={{ marginBottom: '10px' }} onClick={() => handleClickOpen(null)}>+ Add Product</Button>
-      <TableContainer component={Paper} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Shape</TableCell>
-              <TableCell>Carat</TableCell>
-              <TableCell>Color</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Lab</TableCell>
-              <TableCell>Origin</TableCell>
-              <TableCell>Quantity</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <TableRow key={product.diamond_id}>
+      <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "20px", marginBottom: "50px" }}>
+        <TableContainer component={Paper} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell>Shape</StyledTableCell>
+                <StyledTableCell>Carat</StyledTableCell>
+                <StyledTableCell>Color</StyledTableCell>
+                <StyledTableCell>Price</StyledTableCell>
+                <StyledTableCell>Lab</StyledTableCell>
+                <StyledTableCell>Origin</StyledTableCell>
+                <StyledTableCell>Quantity</StyledTableCell>
+                <StyledTableCell>Image</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell>Action</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(product => (
+                <TableRow key={product.diamond_id} hover>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.shape}</TableCell>
                   <TableCell>{product.carat}</TableCell>
@@ -190,23 +284,29 @@ const ProductsManagement = () => {
                   </TableCell>
                   <TableCell>{product.diamond_status ? 'Active' : 'Inactive'}</TableCell>
                   <TableCell>
-                    <IconButton aria-label="edit" color="primary" onClick={() => handleClickOpen(product)}>
+                    <IconButton aria-label="edit" color="primary" onClick={() => handleClickOpen(product)} sx={{ color: "grey" }}>
                       <Edit />
                     </IconButton>
-                    <IconButton aria-label="delete" color="secondary" onClick={() => handleDelete(product.diamond_id)}>
+                    <IconButton aria-label="delete" color="secondary" onClick={() => handleRemove(product.diamond_id)} sx={{ color: "#CD5C5C" }}>
                       <Delete />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={11} align="center">No products found</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              }
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredProducts.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{isEditing ? 'Edit Product' : 'Add New Product'}</DialogTitle>
         <DialogContent>
@@ -221,6 +321,7 @@ const ProductsManagement = () => {
           <FormControl fullWidth margin="dense">
             <InputLabel>Shape</InputLabel>
             <Select
+              label="Shape"
               value={currentProduct.shape}
               onChange={(e) => setCurrentProduct({ ...currentProduct, shape: e.target.value })}
             >
@@ -243,6 +344,7 @@ const ProductsManagement = () => {
           <FormControl fullWidth margin="dense">
             <InputLabel>Color</InputLabel>
             <Select
+              label="Color"
               multiple
               value={currentProduct.color}
               onChange={(e) => setCurrentProduct({ ...currentProduct, color: e.target.value })}
@@ -268,12 +370,13 @@ const ProductsManagement = () => {
           <FormControl fullWidth margin="dense">
             <InputLabel>Lab</InputLabel>
             <Select
+              label="Lab"
               value={currentProduct.lab}
               onChange={(e) => setCurrentProduct({ ...currentProduct, lab: e.target.value })}
             >
               <MenuItem value="GIA">GIA</MenuItem>
               <MenuItem value="SJC">SJC</MenuItem>
-              
+
             </Select>
           </FormControl>
           <TextField
@@ -306,7 +409,7 @@ const ProductsManagement = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="primary" sx={{ color: "red" }}>
             Close
           </Button>
           <Button onClick={handleSave} color="primary">
@@ -314,6 +417,42 @@ const ProductsManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        open={confirmClose}
+        onClose={() => handleConfirmClose(false)}
+      >
+        <DialogTitle>Confirmation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure to close this tab?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleConfirmClose(false)} color="primary" sx={{ color: "red" }}>
+            No
+          </Button>
+          <Button onClick={() => handleConfirmClose(true)} color="primary">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={confirmDeleteItemId !== null} onClose={handleCancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to remove this item?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" sx={{ color: "red" }}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <ToastContainer />
     </Container>
   );
 };
