@@ -145,16 +145,19 @@ function FAQ() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box position="relative" width="100%">
-        <img
-          src="https://www.datocms-assets.com/39109/1647275691-de-beers-jewellers-alchemist-of-light-couture-collection.webp?auto=format&fit=max&w=1200"
-          alt="Header Image"
-          style={{
-            width: "100%",
-            height: "300px",
-            objectFit: "cover",
-            objectPosition: "top",
+        <Box
+          sx={{
+            backgroundImage: `url('https://www.datocms-assets.com/39109/1647275691-de-beers-jewellers-alchemist-of-light-couture-collection.webp?auto=format&fit=max&w=1200')`,
+            backgroundSize: "cover", // Đảm bảo hình ảnh bao phủ toàn bộ phần tử
+            backgroundPosition: "top", // Đặt hình ảnh ở giữa
+            backgroundRepeat: "no-repeat", // Không lặp lại hình ảnh
+            height: "50vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
           }}
-        />
+        ></Box>
         <Box
           position="absolute"
           top="35%"
@@ -170,7 +173,6 @@ function FAQ() {
         maxWidth="xl"
         style={{
           marginTop: "2em",
-          backgroundColor: "#fff",
           padding: "2em",
           borderRadius: "8px",
         }}

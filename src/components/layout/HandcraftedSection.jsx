@@ -1,6 +1,7 @@
 
 import { Box, Typography, Button, Container } from '@mui/material';
-import img3 from '../../assets/images/img3.jpg'; 
+import img3 from '../../assets/images/img3.jpg';
+import { Link } from "react-router-dom"
 
 const HandcraftedSection = () => {
   return (
@@ -14,8 +15,13 @@ const HandcraftedSection = () => {
             Our highly skilled artisans exceed industry standards with sparkling GIA-graded natural diamonds,
             the finest-quality materials and outstanding engagement ring design at an amazing value.
           </Typography>
-          <Button variant="contained" style={{ backgroundColor: '#2c3e50', color: 'white', fontFamily: 'serif' }}>
-            ABOUT Diamond Jewelry
+          <Button variant="contained" component={Link}
+            to="/jewelryknowledge" style={{ backgroundColor: '#2c3e50', color: 'white', fontFamily: 'serif', marginRight: 10, }}>
+            ABOUT Jewelry
+          </Button>
+          <Button variant="contained" component={Link}
+            to="/diamondknowledge" style={{ backgroundColor: '#2c3e50', color: 'white', fontFamily: 'serif' }}>
+            ABOUT Diamond
           </Button>
         </Box>
         <Box style={{ flex: 1 }}>

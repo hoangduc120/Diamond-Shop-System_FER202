@@ -47,7 +47,7 @@ const Account = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{mt: 5}}>
       <Typography variant="h5" gutterBottom>
         Account Information
       </Typography>

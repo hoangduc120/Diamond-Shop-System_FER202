@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react';
 import axios from '../../../axiosConfig';
-import { Typography, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, FormControlLabel, Switch } from '@mui/material';
+import { Typography, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, FormControlLabel, Switch, styled, DialogContentText, Box, TablePagination } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from 'react-redux';
+import { RingLoader } from 'react-spinners';
+
+const StyledTableCell = styled(TableCell)({
+  fontWeight: 'bold',
+});
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentUser, setCurrentUser] = useState({
     user_id: '',
     fullname: '',
@@ -29,9 +41,12 @@ const UserManagement = () => {
       .then(response => {
         console.log('Fetched users:', response.data);
         setUsers(response.data);
+        setFilteredUsers(response.data);
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
+        setLoading(false);
       });
   };
 
@@ -57,14 +72,14 @@ const UserManagement = () => {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setConfirmClose(true);
   };
 
   const handleSave = () => {
     console.log('Current User:', currentUser);
 
     if (!currentUser.fullname || !currentUser.email || !currentUser.phone || !currentUser.address_shipping) {
-      alert('Please fill in all required fields.');
+      notifyFail();
       return;
     }
 
@@ -73,7 +88,8 @@ const UserManagement = () => {
         .then(response => {
           console.log('User updated:', response.data);
           fetchUsers();
-          handleClose();
+          setOpen(false);
+          notifySuccess();
         })
         .catch(error => {
           console.error('Error updating user:', error.response ? error.response.data : error.message);
@@ -83,7 +99,8 @@ const UserManagement = () => {
         .then(response => {
           console.log('User added:', response.data);
           fetchUsers();
-          handleClose();
+          setOpen(false);
+          notifySuccess();
         })
         .catch(error => {
           console.error('Error adding user:', error.response ? error.response.data : error.message);
@@ -102,32 +119,105 @@ const UserManagement = () => {
       });
   };
 
+  const [confirmClose, setConfirmClose] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleConfirmClose = (confirm) => {
+    if (confirm) {
+      setOpen(false);
+    }
+    setConfirmClose(false);
+  };
+
+  const [confirmDeleteItemId, setConfirmDeleteItemId] = useState(null);
+
+  const handleRemove = (id) => {
+    setConfirmDeleteItemId(id); // Set the item ID for confirmation
+  };
+
+  const handleConfirmDelete = () => {
+    dispatch(handleDelete(confirmDeleteItemId));
+    setConfirmDeleteItemId(null); // Clear the confirmation state after deletion
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDeleteItemId(null); // Clear the confirmation state if canceled
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const notifySuccess = () => toast.success('Save Successfully!', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+  });
+
+  const notifyFail = () => toast.error('Please fill in all required fields!', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+  });
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+        <RingLoader color="#B19567" size={80} />
+      </Box>
+    );
+  }
+
   return (
     <Container maxWidth="lg" style={{ marginTop: '20px' }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ fontFamily: "Times New Roman" }}>
         User Management
       </Typography>
-      <Button variant="contained" color="primary" style={{ marginBottom: '10px' }} onClick={() => handleClickOpen(null)}>+ Add User</Button>
-      <TableContainer component={Paper} style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>UserID</TableCell>
-              <TableCell>Full Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Avatar</TableCell>
-              <TableCell>Gender</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.length > 0 ? (
-              users.map((user) => (
-                <TableRow key={user.user_id}>
+      <Button variant="contained"
+        sx={{
+          marginBottom: '10px', backgroundColor: "#B19567",
+          "&:hover": {
+            backgroundColor: "#2c3e50",
+          },
+        }}
+        onClick={() => handleClickOpen(null)}>+ Add User</Button>
+      <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "20px" }}>
+        <TableContainer component={Paper} style={{  maxHeight: '60vh', overflowY: 'auto' }}>
+          <Table stickyHeader>
+            <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                <StyledTableCell>UserID</StyledTableCell>
+                <StyledTableCell>Full Name</StyledTableCell>
+                <StyledTableCell>Email</StyledTableCell>
+                <StyledTableCell>Phone</StyledTableCell>
+                <StyledTableCell>Address</StyledTableCell>
+                <StyledTableCell>Avatar</StyledTableCell>
+                <StyledTableCell>Gender</StyledTableCell>
+                <StyledTableCell>Role</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell>Action</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user => (
+                <TableRow key={user.user_id} hover>
                   <TableCell>{user.user_id}</TableCell>
                   <TableCell>{user.fullname}</TableCell>
                   <TableCell>{user.email}</TableCell>
@@ -140,23 +230,29 @@ const UserManagement = () => {
                   <TableCell>{user.role ? 'Admin' : 'User'}</TableCell>
                   <TableCell>{user.account_status ? 'Active' : 'Inactive'}</TableCell>
                   <TableCell>
-                    <IconButton aria-label="edit" color="primary" onClick={() => handleClickOpen(user)}>
+                    <IconButton aria-label="edit" color="primary" onClick={() => handleClickOpen(user)} sx={{ color: "grey" }}>
                       <Edit />
                     </IconButton>
-                    <IconButton aria-label="delete" color="secondary" onClick={() => handleDelete(user.user_id)}>
+                    <IconButton aria-label="delete" color="secondary" onClick={() => handleRemove(user.user_id)} sx={{ color: "#CD5C5C" }}>
                       <Delete />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={10} align="center">No users found</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              }
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredUsers.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{isEditing ? 'Edit User' : 'Add New User'}</DialogTitle>
         <DialogContent>
@@ -214,7 +310,7 @@ const UserManagement = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="primary" sx={{ color: "black" }}>
             Close
           </Button>
           <Button onClick={handleSave} color="primary">
@@ -222,6 +318,42 @@ const UserManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        open={confirmClose}
+        onClose={() => handleConfirmClose(false)}
+      >
+        <DialogTitle>Confirmation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure to close this tab?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleConfirmClose(false)} color="primary" sx={{ color: "red" }}>
+            No
+          </Button>
+          <Button onClick={() => handleConfirmClose(true)} color="primary">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={confirmDeleteItemId !== null} onClose={handleCancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to remove this user?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" sx={{ color: "red" }}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <ToastContainer />
     </Container>
   );
 };

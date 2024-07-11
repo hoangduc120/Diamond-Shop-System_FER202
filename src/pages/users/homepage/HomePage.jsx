@@ -3,10 +3,11 @@ import img1 from "../../../assets/images/img1.jpg";
 import img2 from "../../../assets/images/img2.jpg";
 import Products from "../product/Products";
 import HandcraftedSection from "../../../components/layout/HandcraftedSection";
+import {Link} from "react-router-dom"
 
 const HomePage = () => {
   return (
-    <Box>
+    <Box sx={{mt: 3}}>
       <Box
         style={{
           position: "relative",
@@ -45,31 +46,12 @@ const HomePage = () => {
             <br />
             with pieces that'll always be adored (and save up to 30%).
           </Typography>
-          <Box>
-            <Button
-              variant="contained"
-              style={{
-                marginRight: 10,
-                backgroundColor: "#2c3e50",
-                color: "white",
-                fontFamily: "serif",
-              }}
-            >
-              SHOP SALE JEWELRY
-            </Button>
-            <Button
-              variant="contained"
-              style={{
-                backgroundColor: "#2c3e50",
-                color: "white",
-                fontFamily: "serif",
-              }}
-            >
-              SHOP ENGAGEMENT
-            </Button>
-          </Box>
         </Container>
       </Box>
+
+      <Typography variant="h4" gutterBottom style={{ textAlign: 'center', marginTop: '40px' }}>
+        Best Selling Products
+      </Typography>
 
       <Products />
 
@@ -121,17 +103,8 @@ const HomePage = () => {
           <Box>
             <Button
               variant="contained"
-              style={{
-                marginRight: 10,
-                backgroundColor: "#2c3e50",
-                color: "white",
-                fontFamily: "serif",
-              }}
-            >
-              SHOP SETTINGS
-            </Button>
-            <Button
-              variant="contained"
+              component={Link}
+            to="/diamonds"
               style={{
                 backgroundColor: "#2c3e50",
                 color: "white",

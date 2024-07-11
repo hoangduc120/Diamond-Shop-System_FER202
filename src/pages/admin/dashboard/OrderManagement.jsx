@@ -1,28 +1,88 @@
-import { useState } from 'react';
-import { Typography, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Select, MenuItem } from '@mui/material';
 
-const orders = [
-  { orderId: '200803', customer: 'taile03', date: '2024-1-2 13:23:44', location: 'Thu Duc', phoneNumber: '0903112345', method: 'VNPAY', price: '250.000', status: 'COMPLETED', products: [{ name: 'Wild', quantity: 5, price: '750.000' }, { name: 'Stylish', quantity: 7, price: '750.000' }] },
-  { orderId: '200803', customer: 'taile03', date: '2024-1-2 13:23:44', location: 'Long An', phoneNumber: '0903112345', method: 'COD', price: '750.000', status: 'CANCELLED', products: [{ name: 'Wild', quantity: 5, price: '750.000' }, { name: 'Stylish', quantity: 7, price: '750.000' }] },
-  { orderId: '200803', customer: 'taile03', date: '2024-1-2 13:23:44', location: 'Long An', phoneNumber: '0903112345', method: 'VNPAY', price: '750.000', status: 'PENDING', products: [{ name: 'Wild', quantity: 5, price: '750.000' }, { name: 'Stylish', quantity: 7, price: '750.000' }] },
-];
+import { useEffect, useState } from 'react';
+import {
+  Typography,
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+  Select,
+  MenuItem,
+  Box,
+  Grid,
+  IconButton,
+  Snackbar,
+  Alert,
+  TablePagination,
+} from '@mui/material';
+import { styled } from '@mui/system';
+import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
+import { RingLoader } from 'react-spinners';
 
-const getStatusStyle = (status) => {
-  switch (status) {
-    case 'COMPLETED':
-      return { backgroundColor: 'green', color: 'white', borderRadius: '5px', padding: '5px 10px' };
-    case 'CANCELLED':
-      return { backgroundColor: 'red', color: 'white', borderRadius: '5px', padding: '5px 10px' };
-    case 'PENDING':
-      return { backgroundColor: 'orange', color: 'white', borderRadius: '5px', padding: '5px 10px' };
-    default:
-      return {};
-  }
-};
+const StyledTableCell = styled(TableCell)({
+  fontWeight: 'bold',
+});
 
 const OrderManagement = () => {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [diamonds, setDiamonds] = useState([]);
+  const [combinedData, setCombinedData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [confirmClose, setConfirmClose] = useState(false);
+
+  useEffect(() => {
+    const requestUser = axios.get("/users");
+    const requestOrder = axios.get("/api/payments");
+    const requestDiamond = axios.get('/diamonds');
+  
+    Promise.all([requestUser, requestOrder, requestDiamond])
+      .then(([usersResponse, ordersResponse, diamondsResponse]) => {
+        const usersData = Array.isArray(usersResponse.data) ? usersResponse.data : [];
+        const ordersData = Array.isArray(ordersResponse.data) ? ordersResponse.data : [];
+        const diamondsData = Array.isArray(diamondsResponse.data) ? diamondsResponse.data : [];
+  
+        setUsers(usersData);
+        setOrders(ordersData);
+        setDiamonds(diamondsData);
+  
+        // Kết hợp dữ liệu ngay sau khi nhận được phản hồi API
+        const combinedData = ordersData.map(order => {
+          const user = usersData.find(u => u.user_id === order.user_id);
+          const diamond = diamondsData.find(d => d.diamond_id === order.diamonds[0]?.diamond_id); // Đảm bảo rằng order.diamonds tồn tại và không phải là mảng rỗng
+  
+          return {
+            ...order,
+            ...(user || {}), // Chỉ thêm user nếu tìm thấy
+            ...(diamond || {}), // Chỉ thêm diamond nếu tìm thấy
+          };
+        });
+  
+        setCombinedData(combinedData);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
+  }, []); // Chỉ chạy một lần khi component được mount
 
   const handleClickOpen = (order) => {
     setSelectedOrder(order);
@@ -30,104 +90,205 @@ const OrderManagement = () => {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setConfirmClose(true);
+  };
+
+  const handleConfirmClose = (confirm) => {
+    if (confirm) {
+      setOpen(false);
+    }
+    setConfirmClose(false);
   };
 
   const handleSave = () => {
     // Handle save action here
+    setSnackbarOpen(true);
     setOpen(false);
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+        <RingLoader color="#B19567" size={80} />
+      </Box>
+    );
+  }
+
   return (
     <Container maxWidth="lg" style={{ marginTop: '20px' }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h4" gutterBottom style={{ fontFamily: 'Times New Roman' }}>
         Order Management
       </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>OrderID</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Location</TableCell>
-              <TableCell>Phone number</TableCell>
-              <TableCell>Method</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orders.map((order) => (
-              <TableRow key={order.orderId}>
-                <TableCell>{order.orderId}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>{order.location}</TableCell>
-                <TableCell>{order.phoneNumber}</TableCell>
-                <TableCell>{order.method}</TableCell>
-                <TableCell>{order.price}</TableCell>
-                <TableCell>
-                  <span style={getStatusStyle(order.status)}>{order.status}</span>
-                </TableCell>
-                <TableCell>
-                  <Button variant="contained" color="primary" onClick={() => handleClickOpen(order)}>
-                    View Details
-                  </Button>
-                </TableCell>
+      <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "20px", marginBottom: "50px" }}>
+        <TableContainer style={{ maxHeight: "60vh", overflowY: "auto" }}>
+          <Table stickyHeader>
+            <TableHead style={{ backgroundColor: '#f5f5f5' }}>
+              <TableRow>
+                <StyledTableCell>OrderID</StyledTableCell>
+                <StyledTableCell>Customer</StyledTableCell>
+                <StyledTableCell>Date</StyledTableCell>
+                <StyledTableCell>Address</StyledTableCell>
+                <StyledTableCell>Phone</StyledTableCell>
+                <StyledTableCell>Method</StyledTableCell>
+                <StyledTableCell>Price</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell>Action</StyledTableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {combinedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                <TableRow key={index} hover >
+                  <TableCell>{item.user_id}</TableCell>
+                  <TableCell>{item.fullname}</TableCell>
+                  <TableCell>{item.date}</TableCell>
+                  <TableCell>{item.address_shipping}</TableCell>
+                  <TableCell>{item.phone}</TableCell>
+                  <TableCell>{item.partnerCode}</TableCell>
+                  <TableCell>{item.totalAmount}</TableCell>
+                  <TableCell>
+                    {item.status ? "True" : "False"}
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="contained" color="primary" onClick={() => handleClickOpen(item)}>
+                      View Details
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={combinedData.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
       {selectedOrder && (
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Details Order</DialogTitle>
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" >
+          <DialogTitle>
+            Order Details
+            <IconButton
+              aria-label="close"
+              onClick={handleClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Order ID: {selectedOrder.orderId}
+              <strong>Order ID:</strong> {selectedOrder.user_id}
             </DialogContentText>
-            <TextField margin="dense" label="Customer" type="text" fullWidth value={selectedOrder.customer} disabled />
-            <TextField margin="dense" label="Date" type="text" fullWidth value={selectedOrder.date} disabled />
-            <TextField margin="dense" label="Method" type="text" fullWidth value={selectedOrder.method} disabled />
-            <TextField margin="dense" label="Location" type="text" fullWidth value={selectedOrder.location} />
-            <TextField margin="dense" label="Phone Number" type="text" fullWidth value={selectedOrder.phoneNumber} />
-            <Typography variant="h6" gutterBottom style={{ marginTop: '10px' }}>Product:</Typography>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Quantity</TableCell>
-                  <TableCell>Price</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {selectedOrder.products.map((product, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>{product.quantity}</TableCell>
-                    <TableCell>{product.price}</TableCell>
-                  </TableRow>
-                ))}
-                <TableRow>
-                  <TableCell colSpan={2}>Total</TableCell>
-                  <TableCell>{selectedOrder.products.reduce((acc, product) => acc + parseFloat(product.price.replace('.', '')), 0).toLocaleString()}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-            <Select
-              margin="dense"
-              label="Status"
-              fullWidth
-              value={selectedOrder.status}
-              onChange={(e) => setSelectedOrder({ ...selectedOrder, status: e.target.value })}
-            >
-              <MenuItem value="COMPLETED">COMPLETED</MenuItem>
-              <MenuItem value="CANCELLED">CANCELLED</MenuItem>
-              <MenuItem value="PENDING">PENDING</MenuItem>
-            </Select>
-            <TextField margin="dense" label="Note" type="text" fullWidth multiline rows={4} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  margin="dense"
+                  label="Customer"
+                  type="text"
+                  fullWidth
+                  value={selectedOrder.fullname}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  margin="dense"
+                  label="Date"
+                  type="text"
+                  fullWidth
+                  value={selectedOrder.date}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  margin="dense"
+                  label="Method"
+                  type="text"
+                  fullWidth
+                  value={selectedOrder.partnerCode}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  margin="dense"
+                  label="Address"
+                  type="text"
+                  fullWidth
+                  value={selectedOrder.address_shipping}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  margin="dense"
+                  label="Phone"
+                  type="text"
+                  fullWidth
+                  value={selectedOrder.phone}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom style={{ marginTop: '10px' }}>
+                  Products:
+                </Typography>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Quantity</TableCell>
+                      <TableCell>Price</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow >
+                      <TableCell>{selectedOrder.name}</TableCell>
+                      <TableCell>{selectedOrder.quantity}</TableCell>
+                      <TableCell>{selectedOrder.price}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell colSpan={2}>Total</TableCell>
+                      <TableCell>
+                        {selectedOrder.totalAmount}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  margin="dense"
+                  label="Note"
+                  type="text"
+                  fullWidth
+                  multiline
+                  rows={4}
+                />
+              </Grid>
+            </Grid>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
@@ -139,6 +300,35 @@ const OrderManagement = () => {
           </DialogActions>
         </Dialog>
       )}
+      <Dialog
+
+        open={confirmClose}
+        onClose={() => handleConfirmClose(false)}
+      >
+        <DialogTitle>Confirmation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure to close this tab?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleConfirmClose(false)} color="primary">
+            No
+          </Button>
+          <Button onClick={() => handleConfirmClose(true)} color="primary">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Save Successfully
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

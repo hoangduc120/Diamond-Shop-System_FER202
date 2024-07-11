@@ -2,6 +2,13 @@ html {
   scroll-behavior: smooth;
 }
 
+body {
+  font-family:Times New Roman, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -21,4 +28,9 @@ main {
 
 footer {
   flex-shrink: 0;
+}
+
+.active {
+  color: #B19567; /* Màu chữ của nút khi được kích hoạt */
+  text-decoration: none; 
 }

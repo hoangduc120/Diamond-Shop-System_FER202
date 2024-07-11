@@ -14,6 +14,7 @@ import {
   Slider,
   Button,
 } from '@mui/material';
+import { RingLoader } from 'react-spinners';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -22,6 +23,7 @@ const ProductList = () => {
   const [carat, setCarat] = useState([0.1, 20]);
   const [color, setColor] = useState('');
   const [price, setPrice] = useState([0, 200000000]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,9 +44,11 @@ const ProductList = () => {
         const activeProducts = products.filter(product => product.diamond_status === 'Active');
         setProducts(activeProducts);
         setFilteredProducts(activeProducts);
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
+        setLoading(false);
       });
   };
 
@@ -64,12 +68,17 @@ const ProductList = () => {
     navigate(`/product/${productId}`);
   };
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+        <RingLoader color="#B19567" size={80}/>
+      </Box>
+    );
+  }
+
   return (
-    <Container maxWidth="lg" style={{ padding: '40px 0' }}>
+    <Container maxWidth="lg" style={{ padding: '40px 0', marginTop: 5 }}>
       <Box mb={4}>
-        <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
-          Search
-        </Typography>
         <Box display="flex" flexDirection="column" alignItems="center" mb={2} p={2} bgcolor="#f5f5f5" borderRadius={4}>
           <Box display="flex" width="100%" justifyContent="space-between" mb={2}>
             <TextField
@@ -115,7 +124,7 @@ const ProductList = () => {
               <MenuItem value="K">K</MenuItem>
               <MenuItem value="L">L</MenuItem>
             </TextField>
-            <Button variant="contained" color="primary" onClick={handleSearch} style={{ height: '56px', alignSelf: 'center' }}>
+            <Button variant="contained" color="primary" onClick={handleSearch} style={{ backgroundColor: "#2c3e50", height: '56px', alignSelf: 'center' }}>
               SEARCH
             </Button>
           </Box>
@@ -128,6 +137,18 @@ const ProductList = () => {
                 valueLabelDisplay="auto"
                 min={0.1}
                 max={20}
+                sx={{
+                  color: "#B19567",
+                  "& .MuiSlider-thumb": {
+                    backgroundColor: "#8E6D4D",
+                  },
+                  "& .MuiSlider-track": {
+                    backgroundColor: "#B19567",
+                  },
+                  "& .MuiSlider-rail": {
+                    backgroundColor: "#C4C4C4",
+                  },
+                }}
               />
             </Box>
             <Box flexGrow={1}>
@@ -138,6 +159,18 @@ const ProductList = () => {
                 valueLabelDisplay="auto"
                 min={0}
                 max={200000000}
+                sx={{
+                  color: "#B19567",
+                  "& .MuiSlider-thumb": {
+                    backgroundColor: "#8E6D4D",
+                  },
+                  "& .MuiSlider-track": {
+                    backgroundColor: "#B19567",
+                  },
+                  "& .MuiSlider-rail": {
+                    backgroundColor: "#C4C4C4",
+                  },
+                }}
               />
             </Box>
           </Box>
@@ -160,7 +193,7 @@ const ProductList = () => {
                 <Typography variant="h7" gutterBottom fontWeight="bold">
                   {product.name}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="body2" fontWeight="bold" sx={{ color: "#B19567" }}>
                   {product.price}đ
                 </Typography>
                 <Typography variant="body2" color="textSecondary">

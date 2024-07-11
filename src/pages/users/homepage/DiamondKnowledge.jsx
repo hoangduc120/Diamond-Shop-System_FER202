@@ -25,7 +25,7 @@ import React, { useEffect } from "react";
 
 const navbarHeight = 80; // Adjust this value based on your navbar's height
 
-export default function KnowledgeDiamond() {
+export default function DiamondKnowledge() {
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -75,7 +75,7 @@ export default function KnowledgeDiamond() {
   }, []);
 
   return (
-    <Box>
+    <Box sx={{mt: 3}}>
       <Box
         sx={{
           backgroundImage: `url('https://cdn.wallpapersafari.com/57/31/7vCJNK.jpg')`,

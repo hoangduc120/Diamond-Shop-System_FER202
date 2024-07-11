@@ -13,8 +13,8 @@ import PhoneIphoneOutlinedIcon from "@mui/icons-material/PhoneIphoneOutlined";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 
 const BannerImg = {
-  backgroundImage: `url('https://wallpaper-house.com/data/out/8/wallpaper2you_285299.jpg')`,
-  backgroundPosition: "center",
+  backgroundImage: `url('https://wallpaperaccess.com/full/2474989.jpg')`,
+  backgroundPosition: "10% 71%",
   backgroundRepeat: "no-repeat",
   backgroundSize: "cover",
   color: "white",
@@ -45,7 +45,7 @@ const InfoLinks = [
 
 const AccountLinks = [
   {
-    title: "My Account",
+    title: "Profile",
     link: "/profile",
   },
   {
@@ -62,7 +62,17 @@ const AccountLinks = [
   },
 ];
 
+const navbarHeight = 80;
+
 const Footer = () => {
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: navbarHeight,
+      behavior: 'smooth',
+    });
+  };
+
   return (
     <Box style={BannerImg} >
       <Container sx={{ paddingTop: "2rem", paddingBottom: "0.5rem" }}>
@@ -72,6 +82,7 @@ const Footer = () => {
               component={RouterLink}
               to="/"
               disableRipple
+              onClick={scrollToTop}
               style={{ marginLeft: "3rem" }}
             >
               <DiamondOutlinedIcon fontSize="large" sx={{ color: "#B19567" }} />
@@ -82,6 +93,7 @@ const Footer = () => {
               fontWeight="bold"
               component={RouterLink}
               to="/"
+              onClick={scrollToTop}
               style={{
                 color: "#B19567",
                 marginBottom: "10px",
@@ -107,6 +119,7 @@ const Footer = () => {
                   <Link
                     component={RouterLink}
                     to={link.link}
+                    onClick={scrollToTop}
                     style={{ color: "#ccc", textDecoration: "none" }}
                     onMouseEnter={(e) => (e.target.style.color = "#B19567")}
                     onMouseLeave={(e) => (e.target.style.color = "#ccc")}
@@ -127,6 +140,7 @@ const Footer = () => {
                   <Link
                     component={RouterLink}
                     to={link.link}
+                    onClick={scrollToTop}
                     style={{ color: "#ccc", textDecoration: "none" }}
                     onMouseEnter={(e) => (e.target.style.color = "#B19567")}
                     onMouseLeave={(e) => (e.target.style.color = "#ccc")}
@@ -142,12 +156,12 @@ const Footer = () => {
               Contact Us
             </Typography>
             <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <LocationOnOutlinedIcon sx={{color: "#ccc"}}/>
-              <Typography variant="body2" sx={{color: "#ccc"}}>Vinhomes Grand Park</Typography>
+              <LocationOnOutlinedIcon sx={{ color: "#ccc" }} />
+              <Typography variant="body2" sx={{ color: "#ccc" }}>Vinhomes Grand Park</Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <PhoneIphoneOutlinedIcon sx={{color: "#ccc"}}/>
-              <Typography variant="body2" sx={{color: "#ccc"}}>+84 794442282</Typography>
+              <PhoneIphoneOutlinedIcon sx={{ color: "#ccc" }} />
+              <Typography variant="body2" sx={{ color: "#ccc" }}>+84 794442282</Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={1}>
               <Link
@@ -249,14 +263,14 @@ const Footer = () => {
               />
             </Link>
             <Link
-              href="https://www.paypal.com"
+              href="https://vnpay.vn/"
               target="_blank"
               rel="noopener noreferrer"
               sx={{ textDecoration: "none" }}
             >
               <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFHnwQPjQj5uZwPUGsv4bZAW2fXde1Aiu32Q&s"
-                alt="PayPal"
+                src="https://admin.softmaster.vn/_default_upload_bucket/154573132_152687123342645_1913382004205201124_n.png"
+                alt="VNPay"
                 style={{ width: "40px", height: "20px", marginLeft: "10px" }}
               />
             </Link>
