@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "../../../axiosConfig";
 import { useParams } from "react-router-dom";
-import { Container, Typography, Box, Grid, Button } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Button,
+  Card,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../store/cartSlice";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,10 +33,6 @@ const ProductDetail = () => {
       });
   }, [id]);
 
-  if (!product) {
-    return <Typography>Loading...</Typography>;
-  }
-
   const handleAddToCart = () => {
     dispatch(
       addToCart({
@@ -35,135 +41,124 @@ const ProductDetail = () => {
         availableQuantity: parseInt(product.quantity),
       })
     );
+    setSnackbarOpen(true); // Open Snackbar when adding to cart
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const handleBuyNow = () => {
     handleAddToCart();
-    navigate("/cart");
+    navigate("/checkout");
   };
 
   return (
-    <Container
-      maxWidth="lg"
-      style={{ padding: "40px 0", backgroundColor: "#f8f8f8" }}
-    >
+    <Container maxWidth="lg" style={{ paddingTop: 40, marginBottom: 40 }}>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#fff",
-              borderRadius: "10px",
-              overflow: "hidden",
-            }}
-          >
+          <Card elevation={3}>
             <img
-              src={product.image}
-              alt={product.name}
-              style={{ maxWidth: "100%", height: "auto" }}
+              src={product?.image}
+              alt={product?.name}
+              style={{ width: "100%", maxHeight: 600, objectFit: "cover" }}
             />
-          </Box>
+          </Card>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Typography variant="h4" gutterBottom>
-            {product.name}
-          </Typography>
-          <Typography variant="h6" color="textSecondary" gutterBottom>
-            {product.shape} | {product.color.join(", ")} Color | {product.lab}{" "}
-            Lab
-          </Typography>
-          <Typography
-            variant="h5"
-            style={{ color: "#d32f2f", margin: "20px 0" }}
-          >
-            {parseInt(product.price).toLocaleString()}đ
-          </Typography>
-          <Box>
-            <Button
-              variant="contained"
-              color="primary"
-              style={{ marginRight: "10px" }}
-              onClick={handleAddToCart}
+          <Box paddingLeft={4}>
+            <Typography
+              variant="h5"
+              component="div"
+              gutterBottom
+              fontWeight="bold"
             >
-              Add to Cart
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleBuyNow}
+              {product?.name}
+            </Typography>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              style={{ color: "#d32f2f", marginBottom: 20 }}
             >
-              Buy Now
-            </Button>
+              {parseInt(product?.price).toLocaleString()}đ
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Shape:</strong> {product?.shape}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Carat:</strong> {product?.carat}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Color:</strong> {product?.color.join(", ")}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Price:</strong>{" "}
+                  {parseInt(product?.price).toLocaleString()}đ
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Lab:</strong> {product?.lab}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Origin:</strong> {product?.origin}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Quantity:</strong> {product?.quantity}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  <strong>Status:</strong>{" "}
+                  {product?.diamond_status ? "Active" : "Inactive"}
+                </Typography>
+              </Grid>
+              <Box marginTop={4}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddToCart}
+                  style={{ marginRight: 10 }}
+                >
+                  Add to Cart
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleBuyNow}
+                >
+                  Buy Now
+                </Button>
+              </Box>
+            </Grid>
           </Box>
         </Grid>
       </Grid>
-      <Box style={{ marginTop: "40px" }}>
-        <Typography variant="h5" gutterBottom>
-          Product Details
-        </Typography>
-        <Grid container spacing={4}>
-          {product.shape && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Shape:</strong> {product.shape}
-              </Typography>
-            </Grid>
-          )}
-          {product.carat && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Carat:</strong> {product.carat}
-              </Typography>
-            </Grid>
-          )}
-          {product.color && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Color:</strong> {product.color.join(", ")}
-              </Typography>
-            </Grid>
-          )}
-          {product.price && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Price:</strong>{" "}
-                {parseInt(product.price).toLocaleString()}đ
-              </Typography>
-            </Grid>
-          )}
-          {product.lab && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Lab:</strong> {product.lab}
-              </Typography>
-            </Grid>
-          )}
-          {product.origin && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Origin:</strong> {product.origin}
-              </Typography>
-            </Grid>
-          )}
-          {product.quantity && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Quantity:</strong> {product.quantity}
-              </Typography>
-            </Grid>
-          )}
-          {product.diamond_status !== undefined && (
-            <Grid item xs={12} sm={4}>
-              <Typography variant="body1">
-                <strong>Status:</strong>{" "}
-                {product.diamond_status ? "Active" : "Inactive"}
-              </Typography>
-            </Grid>
-          )}
-        </Grid>
-      </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Add to cart successfully
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
