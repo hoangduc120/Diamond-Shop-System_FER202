@@ -25,9 +25,10 @@ import { Link, useNavigate } from "react-router-dom";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { logout } from "../../config/firebase.jsx";
+import { auth, logout } from "../../config/firebase.jsx"; // Cập nhật import
 import axios from "axios";
 import { RingLoader } from "react-spinners";
+import { useAuthState } from "react-firebase-hooks/auth"; // Sử dụng hook để kiểm tra trạng thái đăng nhập
 
 const Navbar = () => {
   const [user, setUser] = useState([]);
@@ -40,6 +41,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const cartItemCount = useSelector((state) => state.cart.items.length);
+  const [userAuth, loadingAuth] = useAuthState(auth); // Kiểm tra trạng thái đăng nhập
 
   useEffect(() => {
     axios
@@ -135,7 +137,7 @@ const Navbar = () => {
     }
   };
 
-  if (loading) {
+  if (loading || loadingAuth) {
     return (
       <Box
         display="flex"
@@ -442,69 +444,89 @@ const Navbar = () => {
                 />
               </Badge>
             </IconButton>
-            <IconButton
-              color="inherit"
-              onClick={handleAccountMenuOpen}
-              disableRipple
-              sx={{
-                "&:hover": {
-                  color: "#B19567",
-                },
-              }}
-            >
-              <Avatar />
-            </IconButton>
-            <Menu
-              anchorEl={accountEl}
-              id="account-menu"
-              open={Boolean(accountEl)}
-              onClose={handleAccountMenuClose}
-              onClick={handleAccountMenuClose}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  overflow: "visible",
-                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                  mt: 1.5,
-                  "& .MuiAvatar-root": {
-                    width: 32,
-                    height: 32,
-                    ml: -0.5,
-                    mr: 1,
+            {userAuth ? (
+              <>
+                <IconButton
+                  color="inherit"
+                  onClick={handleAccountMenuOpen}
+                  disableRipple
+                  sx={{
+                    "&:hover": {
+                      color: "#B19567",
+                    },
+                  }}
+                >
+                  <Avatar src={userAuth.photoURL} /> {/* Hiển thị hình ảnh của user */}
+                </IconButton>
+                <Menu
+                  anchorEl={accountEl}
+                  id="account-menu"
+                  open={Boolean(accountEl)}
+                  onClose={handleAccountMenuClose}
+                  onClick={handleAccountMenuClose}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                      mt: 1.5,
+                      "& .MuiAvatar-root": {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      "&::before": {
+                        content: '""',
+                        display: "block",
+                        position: "absolute",
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: "background.paper",
+                        transform: "translateY(-50%) rotate(45deg)",
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                >
+                  <MenuItem onClick={() => navigate("/profile")}>
+                    <Avatar src={userAuth.photoURL} />
+                    Profile
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={() => navigate("/dashboard")}>
+                    <Avatar src={userAuth.photoURL} />
+                    Dashboard
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                      <Logout fontSize="small" />
+                      Log out
+                    </ListItemIcon>
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button
+                component={Link}
+                to="/login"
+                color="inherit"
+                size="small"
+                disableRipple
+                sx={{
+                  "&:hover": {
+                    color: "#B19567",
+                    backgroundColor: "transparent",
                   },
-                  "&::before": {
-                    content: '""',
-                    display: "block",
-                    position: "absolute",
-                    top: 0,
-                    right: 14,
-                    width: 10,
-                    height: 10,
-                    bgcolor: "background.paper",
-                    transform: "translateY(-50%) rotate(45deg)",
-                    zIndex: 0,
-                  },
-                },
-              }}
-              transformOrigin={{ horizontal: "right", vertical: "top" }}
-              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            >
-              <MenuItem onClick={() => navigate("/profile")}>
-                <Avatar />
-                Profile
-              </MenuItem>
-              <Divider />
-              <MenuItem onClick={() => navigate("/dashboard")}>
-                <Avatar />
-                Dashboard
-              </MenuItem>
-              <MenuItem onClick={handleLogout}>
-                <ListItemIcon>
-                  <Logout fontSize="small" />
-                  Log out
-                </ListItemIcon>
-              </MenuItem>
-            </Menu>
+                }}
+              >
+                Login
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>

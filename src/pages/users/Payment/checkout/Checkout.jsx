@@ -26,7 +26,7 @@ import { doc, getDoc } from "firebase/firestore";
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is required"),
   lastName: Yup.string().required("Last Name is required"),
-  addressLine1: Yup.string().required("Address Line 1 is required"),
+  address: Yup.string().required("Address Line 1 is required"),
   province: Yup.string().required("Province/Territory is required"),
   country: Yup.string().required("Country/Region is required"),
   phone: Yup.string().required("Shipping Phone is required"),
@@ -113,8 +113,8 @@ const Checkout = () => {
     }).format(value);
   };
   return (
-    <Container maxWidth="lg" >
-      <Box margin={5} >
+    <Container maxWidth="xl">
+      <Box margin={5}>
         <Typography variant="h4" gutterBottom textAlign={"center"} mb={"25px"}>
           Order Summary
         </Typography>
@@ -162,6 +162,7 @@ const Checkout = () => {
                     </Grid>
                   </Grid>
                 ))}
+              <Divider style={{ margin: "10px 0" }} />
             </Paper>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -173,7 +174,7 @@ const Checkout = () => {
                 lastName: userData.fullname
                   ? userData.fullname.split(" ")[1]
                   : "",
-                addressLine1: userData.address_shipping || "",
+                address: userData.address_shipping || "",
                 province: "",
                 country: "",
                 phone: userData.phone || "",
@@ -212,9 +213,9 @@ const Checkout = () => {
                     </Grid>
                     <Grid item xs={12}>
                       <TextField
-                        label="Address Line 1"
+                        label="Address "
                         fullWidth
-                        name="addressLine1"
+                        name="address"
                         value={values.addressLine1}
                         onChange={handleChange}
                         error={

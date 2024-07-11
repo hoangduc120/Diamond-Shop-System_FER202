@@ -12,9 +12,9 @@ import { Routes, Route, Link } from "react-router-dom";
 import UserManagement from "./UserManagement";
 
 import ProductsManagement from "./ProductsManagement";
-import LogoutIcon from '@mui/icons-material/Logout';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import product_management from '../../../assets/images/product-management.png';
+import LogoutIcon from "@mui/icons-material/Logout";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import product_management from "../../../assets/images/product-management.png";
 import PaymentManagement from "./PaymentManagement";
 
 const Dashboard = () => {
@@ -33,7 +33,7 @@ const Dashboard = () => {
           Main
         </Typography>
         <List>
-          <ListItem button component={Link} to="/dashboard/user-management">
+          <ListItem button component={Link} to="/dashboard/usermanagement">
             <ListItemIcon>
               <ManageAccountsIcon style={{ color: "black" }} />
             </ListItemIcon>
@@ -42,8 +42,11 @@ const Dashboard = () => {
               style={{ color: "black" }}
             />
           </ListItem>
-          <ListItem button component={Link} to="/dashboard/payment-management">
-            <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/payment-management-2084967-1747853.png" style={{ width: "12%", height: "10%" }} />
+          <ListItem button component={Link} to="/dashboard/paymentmanagement">
+            <img
+              src="https://cdn.iconscout.com/icon/premium/png-256-thumb/payment-management-2084967-1747853.png"
+              style={{ width: "12%", height: "10%" }}
+            />
             <ListItemText
               primary="Payment Management"
               style={{ color: "black", marginLeft: "1.8rem" }}
@@ -51,10 +54,13 @@ const Dashboard = () => {
           </ListItem>
           <ListItem button component={Link} to="/dashboard/products">
             <img src={product_management} style={{ width: "13%" }} />
-            <ListItemText primary="Product Management" style={{ color: "black", marginLeft: "1.8rem" }} />
+            <ListItemText
+              primary="Product Management"
+              style={{ color: "black", marginLeft: "1.8rem" }}
+            />
           </ListItem>
           <Button className="dashboard__btn" onClick={logout}>
-            <ListItemIcon sx={{ml: 1.3}}>
+            <ListItemIcon sx={{ ml: 1.3 }}>
               <LogoutIcon style={{ color: "black" }} />
             </ListItemIcon>
             <ListItemText primary="Logout" style={{ color: "black" }} />
@@ -63,8 +69,8 @@ const Dashboard = () => {
       </Box>
       <Box style={{ flexGrow: 1, padding: "20px" }}>
         <Routes>
-          <Route path="user-management" element={<UserManagement />} />
-          <Route path="payment-management" element={<PaymentManagement />} />
+          <Route path="usermanagement" element={<UserManagement />} />
+          <Route path="paymentmanagement" element={<PaymentManagement />} />
           <Route path="products" element={<ProductsManagement />} />
           <Route
             path="logout"

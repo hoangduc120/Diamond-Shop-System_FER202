@@ -1,22 +1,81 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import { signInWithGoogle } from "../components/config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+
 const AuthContext = React.createContext();
 
-const auth = getAuth(); // Initialize Firebase auth instance
+const auth = getAuth();
+const db = getFirestore(); // Initialize Firestore
 
 const AuthProvider = (props) => {
-  const [user] = useAuthState(auth); // Pass the auth instance to useAuthState
+  const [user] = useAuthState(auth);
+  const [authUser, setAuthUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async (uid) => {
+      const userDoc = doc(db, "users", uid);
+      const docSnap = await getDoc(userDoc);
+      if (docSnap.exists()) {
+        return docSnap.data();
+      } else {
+        // Handle the case where user data does not exist
+        console.log("No such document!");
+        return null;
+      }
+    };
+
+    if (user) {
+      fetchUserData(user.uid).then((userData) => {
+        if (userData) {
+          const userWithRole = {
+            user_id: user.uid,
+            email: user.email,
+            fullname: user.displayName,
+            avatar: user.photoURL,
+            role: userData.role, // Lấy role từ cơ sở dữ liệu
+          };
+          localStorage.setItem('userData', JSON.stringify(userWithRole));
+          setAuthUser(userWithRole);
+        }
+      });
+    } else {
+      localStorage.removeItem('userData');
+      setAuthUser(null);
+    }
+  }, [user]);
 
   const login = async () => {
-    const user = await signInWithGoogle();
-    if (!user) {
-      // TODO: Handle failed login
+    try {
+      const result = await signInWithGoogle();
+      const user = result.user;
+      if (user) {
+        const userData = await fetchUserData(user.uid);
+        if (userData) {
+          const userWithRole = {
+            user_id: user.uid,
+            email: user.email,
+            fullname: user.displayName,
+            avatar: user.photoURL,
+            role: userData.role,
+          };
+          localStorage.setItem('userData', JSON.stringify(userWithRole));
+          setAuthUser(userWithRole);
+        }
+      }
+    } catch (error) {
+      console.error("Login failed", error);
     }
   };
 
-  const value = { user, login };
+  const logout = () => {
+    auth.signOut();
+    localStorage.removeItem('userData');
+    setAuthUser(null);
+  };
+
+  const value = { user: authUser, login, logout };
 
   return <AuthContext.Provider value={value} {...props} />;
 };

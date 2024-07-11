@@ -20,6 +20,7 @@ import {
   onSnapshot,
   orderBy,
   setDoc,
+  getDoc,
 } from "firebase/firestore";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -46,8 +47,6 @@ const signInWithGoogle = async () => {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user;
     const q = query(collection(db, "users"), where("user_id", "==", user.uid));
-    console.log("UID: ",user.uid);
-    localStorage.setItem("user_id", user.uid);
     const docs = await getDocs(q);
     if (docs.docs.length === 0) {
       const userData = doc(db, "users", user.uid);
@@ -62,10 +61,14 @@ const signInWithGoogle = async () => {
         authProvider: "google",
         phone: "",
         address_shipping: "",
-        role: "",
+        role: false,
       });
-      console.log(user.getIdToken);
     }
+    localStorage.setItem("user_id", user.uid);
+    const userDataRef = doc(db, "users", user.uid);
+    const userDataSnap = await getDoc(userDataRef);
+    const userDataDoc = userDataSnap.data();
+    localStorage.setItem("userData", JSON.stringify(userDataDoc));
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -85,7 +88,6 @@ const registerWithEmailAndPassword = async (name, email, password) => {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
     const userData = doc(db, "users", user.uid);
-    localStorage.setItem("user_id", user.uid);
     await setDoc(userData, {
       user_id: user.uid,
       fullname: user.displayName,
@@ -97,8 +99,13 @@ const registerWithEmailAndPassword = async (name, email, password) => {
       authProvider: "google",
       phone: "",
       address_shipping: "",
-      role: "",
+      role: false,
     });
+    localStorage.setItem("user_id", user.uid);
+    const userDataRef = doc(db, "users", user.uid);
+    const userDataSnap = await getDoc(userDataRef);
+    const userDataDoc = userDataSnap.data();
+    localStorage.setItem("userData", JSON.stringify(userDataDoc));
   } catch (err) {
     console.error(err);
     alert(err.message);
