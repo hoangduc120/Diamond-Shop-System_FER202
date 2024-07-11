@@ -1,4 +1,3 @@
-
 import {
   GoogleMap,
   LoadScript,
@@ -13,13 +12,13 @@ const containerStyle = {
 };
 
 const center = {
-  lat: 10.842170,
-  lng: 106.828110,
+  lat: 10.84217,
+  lng: 106.82811,
 };
 
 const position = {
-  lat: 10.842170,
-  lng: 106.828110,
+  lat: 10.84217,
+  lng: 106.82811,
 };
 
 const mapStyles = [
@@ -36,7 +35,7 @@ const onLoad = (infoWindow) => {
 
 export default function GoogleMapsComponent() {
   return (
-    <LoadScript googleMapsApiKey="AIzaSyAus8OmNpXmVVKHiEPegwsC1rOsy5qGqGU">
+    <LoadScript>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}

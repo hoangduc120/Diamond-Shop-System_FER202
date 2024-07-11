@@ -337,7 +337,7 @@ const Navbar = () => {
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon>
                   <Logout fontSize="small" />
-                  Đăng xuất
+                  Logout
                 </ListItemIcon>
               </MenuItem>
             </Menu>

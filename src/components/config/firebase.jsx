@@ -46,6 +46,8 @@ const signInWithGoogle = async () => {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user;
     const q = query(collection(db, "users"), where("user_id", "==", user.uid));
+    console.log("UID: ",user.uid);
+    localStorage.setItem("user_id", user.uid);
     const docs = await getDocs(q);
     if (docs.docs.length === 0) {
       const userData = doc(db, "users", user.uid);
@@ -83,6 +85,7 @@ const registerWithEmailAndPassword = async (name, email, password) => {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
     const userData = doc(db, "users", user.uid);
+    localStorage.setItem("user_id", user.uid);
     await setDoc(userData, {
       user_id: user.uid,
       fullname: user.displayName,

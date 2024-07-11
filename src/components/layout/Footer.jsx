@@ -64,7 +64,7 @@ const AccountLinks = [
 
 const Footer = () => {
   return (
-    <Box style={BannerImg} >
+    <Box style={BannerImg}>
       <Container sx={{ paddingTop: "2rem", paddingBottom: "0.5rem" }}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={3}>
@@ -142,12 +142,17 @@ const Footer = () => {
               Contact Us
             </Typography>
             <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <LocationOnOutlinedIcon sx={{color: "#ccc"}}/>
-              <Typography variant="body2" sx={{color: "#ccc"}}>Vinhomes Grand Park</Typography>
+              <LocationOnOutlinedIcon sx={{ color: "#ccc" }} />
+              <Typography variant="body2" sx={{ color: "#ccc" }}>
+                Tòa S1.01 Vinhome Grandpark, Phường Long Bình và Phường Long
+                Thạch Mỹ
+              </Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={1} mb={2}>
-              <PhoneIphoneOutlinedIcon sx={{color: "#ccc"}}/>
-              <Typography variant="body2" sx={{color: "#ccc"}}>+84 794442282</Typography>
+              <PhoneIphoneOutlinedIcon sx={{ color: "#ccc" }} />
+              <Typography variant="body2" sx={{ color: "#ccc" }}>
+                +84 395053713
+              </Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={1}>
               <Link

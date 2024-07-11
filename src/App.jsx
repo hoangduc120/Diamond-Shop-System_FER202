@@ -12,9 +12,11 @@ import Promotion from "./pages/users/homepage/Promotion.jsx";
 import FAQ from "./pages/users/homepage/FAQ/FAQ.jsx";
 import AboutUs from "./pages/users/aboutUs/AboutUs.jsx";
 import Contact from "./pages/users/Contact/Contact.jsx";
-import Checkout from "./components/Payment/checkout/Checkout.jsx";
+import Checkout from "./pages/users/Payment/checkout/Checkout.jsx";
 import HomePage from "./pages/users/homepage/HomePage.jsx";
 import Login from "./pages/users/login/Login.jsx";
+import Reset from "./pages/users/login/Reset.jsx";
+import Register from "./pages/guest/Register.jsx";
 import Profile from "./pages/users/profile/Profile.jsx";
 import MyAccount from "./pages/users/profile/MyAccount.jsx";
 import { Box } from "@mui/material";
@@ -43,12 +45,16 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/reset" element={<Reset />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/account" element={<MyAccount />} />
-              <Route path="/paymentmanagement" element={<PaymentManagement />} />
+              <Route
+                path="/paymentmanagement"
+                element={<PaymentManagement />}
+              />
               <Route path="/ordermanagement" element={<OrderManagement />} />
               <Route path="/usermanagement" element={<UserManagement />} />
-        
             </Routes>
           </Box>
           <Footer />

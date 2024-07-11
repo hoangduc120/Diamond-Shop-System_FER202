@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Container, Grid, TextField, Typography, Button, FormControlLabel, Checkbox, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardMedia, Avatar, Snackbar
 } from '@mui/material';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { db } from '../../../../components/config/firebase'; 
+import { doc, getDoc } from 'firebase/firestore'; 
 
 const validationSchema = Yup.object().shape({
-  userId: Yup.string().required('User ID is required'),
   firstName: Yup.string().required('First Name is required'),
   lastName: Yup.string().required('Last Name is required'),
-  postalCode: Yup.string().required('Postal Code is required'),
-  municipality: Yup.string().required('Municipality is required'),
   addressLine1: Yup.string().required('Address Line 1 is required'),
   province: Yup.string().required('Province/Territory is required'),
   country: Yup.string().required('Country/Region is required'),
@@ -23,6 +22,7 @@ const validationSchema = Yup.object().shape({
 
 const Checkout = () => {
   const [orderDetails, setOrderDetails] = useState(null);
+  const [userData, setUserData] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -31,42 +31,53 @@ const Checkout = () => {
     if (storedOrderDetails) {
       setOrderDetails(storedOrderDetails);
     }
+
+    const userId = localStorage.getItem('user_id');
+    if (userId) {
+      fetchUserData(userId);
+    }
   }, []);
 
+  const fetchUserData = async (userId) => {
+    const userDoc = await getDoc(doc(db, "users", userId));
+    if (userDoc.exists()) {
+      setUserData(userDoc.data());
+    }
+  };
+
   const handleSubmit = (values) => {
+    const userId = localStorage.getItem('user_id'); // Lấy user_id từ localStorage
     const paymentData = {
-      user_id: values.userId,
+      user_id: userId,
       diamonds: orderDetails.cartItems.map(item => ({
         diamond_id: item.id,
         quantity: item.quantity
       })),
-      totalAmount: orderDetails.totalAmount
+      totalAmount: orderDetails.totalAmount,
+      paymentChoice: values.paymentMethod,
     };
 
     axios.post('/api/payments', paymentData)
       .then(response => {
-        // Cập nhật diamond_status nếu quantity bằng 0
-        const updatePromises = orderDetails.cartItems.map(item => {
-          if (item.quantity === 0) {
-            return axios.put(`/diamonds/${item.id}`, { ...item, diamond_status: false });
-          }
-          return Promise.resolve();
-        });
-
-        Promise.all(updatePromises)
-          .then(() => {
-            window.location.href = response.data.payUrl; // Chuyển hướng tới cổng thanh toán MoMo
-          })
-          .catch(error => {
-            console.error('Error updating product status:', error);
-            setSnackbarMessage(`Error processing payment: ${error.response ? error.response.data.message : error.message}`);
-            setSnackbarOpen(true);
-          });
+        console.log('Response from backend:', response);
+        if (response.data && response.data.payUrl) {
+          window.location.href = response.data.payUrl; // Chuyển hướng tới cổng thanh toán MoMo hoặc VNPay
+        } else {
+          console.error('Payment URL not received:', response.data);
+          setSnackbarMessage('Payment URL not received.');
+          setSnackbarOpen(true);
+        }
       })
       .catch(error => {
+        console.error('Error processing payment:', error.response ? error.response.data : error.message);
         setSnackbarMessage(`Error processing payment: ${error.response ? error.response.data.message : error.message}`);
         setSnackbarOpen(true);
       });
+  };
+
+  const handlePaymentMethodChange = (event) => {
+    localStorage.removeItem('paymentMethod'); 
+    handleChange(event);
   };
 
   const handleCloseSnackbar = () => {
@@ -105,37 +116,23 @@ const Checkout = () => {
           <Grid item xs={12} md={6}>
             <Formik
               initialValues={{
-                userId: '',
-                firstName: '',
-                lastName: '',
-                postalCode: '',
-                municipality: '',
-                addressLine1: '',
-                addressLine2: '',
+                firstName: userData.fullname ? userData.fullname.split(' ')[0] : '',
+                lastName: userData.fullname ? userData.fullname.split(' ')[1] : '',
+                addressLine1: userData.address_shipping || '',
                 province: '',
                 country: '',
-                phone: '',
-                email: '',
-                paymentMethod: 'momo',
+                phone: userData.phone || '',
+                email: userData.email || '',
+                paymentMethod: 'MOMO',
                 consent: false,
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
+              enableReinitialize // Thêm dòng này để formik khởi tạo lại giá trị khi userData thay đổi
             >
               {({ errors, touched, values, handleChange }) => (
                 <Form>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <TextField
-                        label="User ID"
-                        fullWidth
-                        name="userId"
-                        value={values.userId}
-                        onChange={handleChange}
-                        error={touched.userId && Boolean(errors.userId)}
-                        helperText={touched.userId && errors.userId}
-                      />
-                    </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label="First Name"
@@ -158,28 +155,6 @@ const Checkout = () => {
                         helperText={touched.lastName && errors.lastName}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        label="Postal Code"
-                        fullWidth
-                        name="postalCode"
-                        value={values.postalCode}
-                        onChange={handleChange}
-                        error={touched.postalCode && Boolean(errors.postalCode)}
-                        helperText={touched.postalCode && errors.postalCode}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        label="Municipality"
-                        fullWidth
-                        name="municipality"
-                        value={values.municipality}
-                        onChange={handleChange}
-                        error={touched.municipality && Boolean(errors.municipality)}
-                        helperText={touched.municipality && errors.municipality}
-                      />
-                    </Grid>
                     <Grid item xs={12}>
                       <TextField
                         label="Address Line 1"
@@ -189,15 +164,6 @@ const Checkout = () => {
                         onChange={handleChange}
                         error={touched.addressLine1 && Boolean(errors.addressLine1)}
                         helperText={touched.addressLine1 && errors.addressLine1}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        label="Address Line 2"
-                        fullWidth
-                        name="addressLine2"
-                        value={values.addressLine2}
-                        onChange={handleChange}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -250,11 +216,18 @@ const Checkout = () => {
                         <Select
                           name="paymentMethod"
                           value={values.paymentMethod}
-                          onChange={handleChange}
+                          onChange={(e) => {
+                            handleChange(e);
+                            handlePaymentMethodChange(e);
+                          }}
                         >
-                          <MenuItem value="momo">
-                            <Avatar src="https://img.mservice.io/momo-payment/icon/icons/appicon96.png" style={{ marginRight: 8 }} />
+                          <MenuItem value="MOMO">
+                            <Avatar src="https://static.ybox.vn/2023/5/2/1683614751843-pham108n6v2au-avatar.png" style={{ marginRight: 8 }} />
                             MoMo
+                          </MenuItem>
+                          <MenuItem value="VNPAY">
+                            <Avatar src="https://static.ybox.vn/2021/1/21/1609389414843-pham1080-150x150.png" style={{ marginRight: 8 }} />
+                            VNPay
                           </MenuItem>
                         </Select>
                         {touched.paymentMethod && errors.paymentMethod && (
@@ -289,7 +262,7 @@ const Checkout = () => {
                     </Grid>
                     <Grid item xs={12}>
                       <Button type="submit" variant="contained" color="primary" fullWidth>
-                        Complete with MoMo
+                        PayMent
                       </Button>
                     </Grid>
                   </Grid>
