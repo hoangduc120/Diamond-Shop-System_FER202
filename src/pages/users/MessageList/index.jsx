@@ -16,6 +16,7 @@ function MessageList({ roomId }) {
 
     return (
         <div className="message-list-container" ref={containerRef}>
+
             <ul className="message-list">
                 {messages.map((x) => (
                     <Message

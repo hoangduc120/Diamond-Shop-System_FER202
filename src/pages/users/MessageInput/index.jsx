@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import { sendMessage } from '../../../components/config/firebase';
+import SendIcon from '@mui/icons-material/Send';
 import './styles.css';
 
 function MessageInput({ roomId }) {
@@ -29,7 +30,7 @@ function MessageInput({ roomId }) {
                 minLength={1}
             />
             <button type="submit" disabled={value < 1} className="send-message">
-                Send
+                <SendIcon/>
             </button>
         </form>
     );

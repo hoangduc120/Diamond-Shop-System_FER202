@@ -31,6 +31,10 @@ import JewelryKnowledge from "./pages/users/homepage/JewelryKnowledge.jsx";
 import Dashboard from "./pages/admin/dashboard/Dashboard.jsx";
 import ProtectedRoute from "./ProteredRoute/ProtredRoute.jsx";
 import NotAuthorized from "./NotAuthorized.jsx";
+import LinkChatbox from "./components/chatbox/chatButton/LinkChatbox.jsx";
+import ChatBoxButton from "./components/chatbox/chatButton/chatboxButton.jsx";
+import { Landing } from "./components/chatbox/Landing/index.jsx";
+import { ChatRoom } from "./components/chatbox/ChatRoom/index.jsx";
 
 function App() {
   return (
@@ -59,16 +63,20 @@ function App() {
               <Route path="/search" element={<SearchResults />} />
               <Route path="/diamondknowledge" element={<DiamondKnowledge />} />
               <Route path="/jewelryknowledge" element={<JewelryKnowledge />} />
-
               {/* Các route admin */}
               <Route element={<ProtectedRoute roles={[true]} />}>
                 <Route path="/dashboard*" element={<Dashboard />} />
               </Route>
               {/* Route cho trang không được phép */}
               <Route path="/not-authorized" element={<NotAuthorized />} />
+
+              <Route path="/chatbox" element={<LinkChatbox />} />
+              <Route path="/landing" element={<Landing />} />
+              <Route path="/room/:id" element={<ChatRoom />} />
             </Routes>
           </Box>
           <Footer />
+          <ChatBoxButton />
         </div>
       </Router>
       <ScrollToTopButton />
