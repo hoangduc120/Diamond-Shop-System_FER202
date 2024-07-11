@@ -19,6 +19,7 @@ import { RingLoader } from 'react-spinners';
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,11 @@ const ProductDetail = () => {
         availableQuantity: parseInt(product.quantity),
       })
     );
+    setSnackbarOpen(true); // Open Snackbar when adding to cart
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
     notifySuccess(); 
   };
 

@@ -39,6 +39,7 @@ const PaymentManagement = () => {
   const [open, setOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const fetchData = () => {
+    setLoading(true);
     axios
       .get("/payments")
       .then((res) => {
@@ -51,6 +52,7 @@ const PaymentManagement = () => {
         setLoading(false);
       });
   };
+
   useEffect(() => {
     fetchData();
   }, []);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
-import { signInWithGoogle } from "../components/config/firebase";
+import { signInWithGoogle, auth as firebaseAuth } from "../components/config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
@@ -36,12 +36,12 @@ const AuthProvider = (props) => {
             avatar: user.photoURL,
             role: userData.role, // Lấy role từ cơ sở dữ liệu
           };
-          localStorage.setItem('userData', JSON.stringify(userWithRole));
+          localStorage.setItem("userData", JSON.stringify(userWithRole));
           setAuthUser(userWithRole);
         }
       });
     } else {
-      localStorage.removeItem('userData');
+      localStorage.removeItem("userData");
       setAuthUser(null);
     }
   }, [user]);
@@ -60,7 +60,7 @@ const AuthProvider = (props) => {
             avatar: user.photoURL,
             role: userData.role,
           };
-          localStorage.setItem('userData', JSON.stringify(userWithRole));
+          localStorage.setItem("userData", JSON.stringify(userWithRole));
           setAuthUser(userWithRole);
         }
       }
@@ -71,7 +71,7 @@ const AuthProvider = (props) => {
 
   const logout = () => {
     auth.signOut();
-    localStorage.removeItem('userData');
+    localStorage.removeItem("userData");
     setAuthUser(null);
   };
 
