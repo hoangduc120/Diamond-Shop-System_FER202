@@ -64,6 +64,7 @@ const PaymentManagement = () => {
         setLoading(false);
         console.log(res.data);
         fetchData();
+        setOpen(false);
       })
       .catch((error) => {
         console.log(error);
