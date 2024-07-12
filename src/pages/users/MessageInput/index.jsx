@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
-import { sendMessage } from '../../../components/config/firebase';
+import { sendMessage, auth } from '../../../components/config/firebase';
 import SendIcon from '@mui/icons-material/Send';
+import { useAuthState } from "react-firebase-hooks/auth";
 import './styles.css';
 
 function MessageInput({ roomId }) {
-    const { user } = useAuth();
+    const [user] = useAuthState(auth);
     const [value, setValue] = useState('');
 
     const handleChange = (event) => {

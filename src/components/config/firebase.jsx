@@ -69,6 +69,7 @@ const signInWithGoogle = async () => {
     const userDataSnap = await getDoc(userDataRef);
     const userDataDoc = userDataSnap.data();
     localStorage.setItem("userData", JSON.stringify(userDataDoc));
+    return { uid: user.uid, displayName: user.displayName };
   } catch (err) {
     console.error(err);
     alert(err.message);

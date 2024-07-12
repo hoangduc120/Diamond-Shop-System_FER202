@@ -1,11 +1,13 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useMessages } from '../../../hooks/useMessages';
+import { auth } from '../../../components/config/firebase';
+import { useAuthState } from "react-firebase-hooks/auth";
 import './styles.css';
 
 function MessageList({ roomId }) {
     const containerRef = useRef(null);
-    const { user } = useAuth();
+    const [user] = useAuthState(auth);
     const messages = useMessages(roomId);
 
     useLayoutEffect(() => {

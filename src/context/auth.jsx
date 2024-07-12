@@ -20,13 +20,16 @@ const AuthProvider = (props) => {
       if (docSnap.exists()) {
         return docSnap.data();
       } else {
-        // Handle the case where user data does not exist
         console.log("No such document!");
         return null;
       }
     };
 
     if (user) {
+      console.log(user.uid); // user ID
+      console.log(user.email); // user email
+      console.log(user.displayName); // user display name
+      console.log(user.photoURL); // user photo URL
       fetchUserData(user.uid).then((userData) => {
         if (userData) {
           const userWithRole = {
@@ -49,8 +52,9 @@ const AuthProvider = (props) => {
   const login = async () => {
     try {
       const result = await signInWithGoogle();
+      localStorage.setItem("userChat", result);
       const user = result.user;
-      if (user) {
+      if (user) { 
         const userData = await fetchUserData(user.uid);
         if (userData) {
           const userWithRole = {
