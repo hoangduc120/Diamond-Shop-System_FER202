@@ -5,7 +5,7 @@
     background-size: cover;
     color: white;
   }
-  
+
   .footer-container {
     padding-top: 2rem;
     padding-bottom: 0.5rem;
@@ -125,4 +125,6 @@
   .payment-icon[alt="MoMo"] {
     object-position: center;
   }
+
+  
   
